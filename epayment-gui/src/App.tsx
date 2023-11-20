@@ -147,17 +147,17 @@ const App = () => {
           </List>
         </Drawer>
 
+
+        {/* URL Routing */}
         <div className="AppContent">
-          {/* URL Routing */}
-          
-            <Routes>
-              <Route path="/" element={<Dashboard/>}>
-                {/* <Route index element={<Dashboard />} /> */}
-              </Route>
-              <Route path="trace" element={<TracingSearch />} />
-              <Route path='reactPage' element={<ReactPage />} />
-            </Routes>
-          
+          <Routes>
+            <Route path="/" element={<Dashboard/>}>
+              {/* <Route index element={<Dashboard />} /> */}
+            </Route>
+            
+            <Route path="trace" element={<TracingSearch />} />
+            <Route path='reactPage' element={<ReactPage />} />
+          </Routes>
         </div>    
       
     
