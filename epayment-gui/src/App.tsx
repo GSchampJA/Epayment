@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Box from '@mui/material/Box';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
@@ -15,13 +15,12 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import CssBaseline from '@mui/material/CssBaseline';
-
-import { mainListItems, secondaryListItems } from './ExampleGui/listItems';
 import './style-css/App.css';
 
 import Dashboard from './Dashboard';
 import TracingSearch from './subPage/tracing/TracingSearch';
 import ReactPage from './subPage/otherPage/ReactPage';
+import { NavListItems_primary, secondaryListItems } from './commonComponent/navBar/NavListItem';
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -106,15 +105,17 @@ const App = () => {
             >
             <MenuIcon />
             </IconButton>
+            
+            
             <Typography
               component="h1"
               variant="h6"
               color="inherit"
               noWrap
               sx={{ flexGrow: 1 }}
-            >
-              E-Payment
+            ><Link className='HomepageLink' to='/'> E-Payment </Link>
             </Typography>
+            
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
                 <NotificationsIcon />
@@ -140,7 +141,7 @@ const App = () => {
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems}
+            {NavListItems_primary}
             <Divider sx={{ my: 1 }} />
             {secondaryListItems}
           </List>

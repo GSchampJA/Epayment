@@ -42,3 +42,28 @@
   padding-top: 4rem;
   width: 100%;
 }
+
+.HomepageLink {
+  color: #FFFF;
+  text-decoration: none;
+}
+
+.NavBarButtonLink {
+  color: #3875d1;
+}
+
+.NavBarButtonLink:link {
+  text-decoration: none;
+}
+
+.NavBarButtonLink:visited {
+  text-decoration: none;
+}
+
+.NavBarButtonLink:hover {
+  text-decoration: underline;
+}
+
+.NavBarButtonLink:active {
+  text-decoration: underline;
+}

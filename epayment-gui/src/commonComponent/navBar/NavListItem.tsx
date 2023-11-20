@@ -5,13 +5,13 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import NavButton from '../commonComponent/navBar/NavButton';
+import NavButton from './NavButton';
 
-export const mainListItems = (
+export const NavListItems_primary = (
   <React.Fragment>
 
     <NavButton url='/' icon={<DashboardIcon />} buttonTitle='Dashboard'/>
-    <NavButton url='trace' icon={<ShoppingCartIcon />} buttonTitle='Orders'/>
+    <NavButton url='trace' icon={<ShoppingCartIcon />} buttonTitle='Transaction'/>
     <NavButton url='reactPage' icon={<PeopleIcon />} buttonTitle='Customers'/>
 
 

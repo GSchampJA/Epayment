@@ -12,7 +12,7 @@ const NavButton = (props: NavButtonProps) => {
     const {url, icon, buttonTitle} = props
 
     return (
-        <Link to={url}>
+        <Link className='NavBarButtonLink' to={url}>
             <ListItemButton>
                 <ListItemIcon>
                     {icon}
