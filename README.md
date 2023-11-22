@@ -7,3 +7,20 @@ For window:
 For mac:
 1. Create mutiple instance using vmware or whatever (virtual machine)
 2. Start server using same command as above
+
+
+### Epayment-gui (Frontend)
+Enter the following command at root directory of project `.\Epayment`
+
+```
+cd epayment-gui
+```
+```
+npm install --global yarn
+```
+```
+yarn install
+```
+```
+yarn start
+```

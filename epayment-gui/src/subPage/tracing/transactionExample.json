@@ -1,0 +1,22 @@
+{
+    "fromTxAdd": {
+        "address": "tb1qzv2qve6m9nv4jtuwmxmyu7az03u789nqzsnkvh",
+        "sent": 90.89187639,
+        "received": 0
+    },
+    "toTxAdd": [
+        {
+            "address": "tb1qac9vtf5q8u3e20hfs8qa76llrnkftuynwjc47l",
+            "sent": 0,
+            "received": 70.123589248
+        },
+        {
+            "address": "tb1qruke99sfyaqvsf7skelsa7avd7nx7z80er27dk",
+            "sent": 0,
+            "received": 20.768287142
+        }
+    ],
+    "txAmount": 90.89187639,
+    "txFees": 0.000141,
+    "timestamp": "2023-11-22T06:46:08.000Z"
+}

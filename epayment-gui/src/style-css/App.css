@@ -75,3 +75,36 @@
   padding-left: 2rem;
   padding-right: 2rem;
 }
+
+.TxSearchingBar {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+}
+
+.TxSearchingBar_inputGroup {
+  flex-direction: row !important
+}
+
+.TransactionBorder_Card {
+  padding: 10px;
+  border-radius: 45px;
+}
+
+.TransactionAdress_Card {
+  padding: 10px;
+  border-radius: 45px !important;
+
+  /* border-color: transparent !important; */
+}
+
+.TransactionAdress_Table {
+  padding: 10px !important;
+}
+
+.font_coinAmount {
+  font-weight: bold;
+  text-decoration: none;
+  padding: 0rem !important;
+  margin-left: 1rem;
+}
