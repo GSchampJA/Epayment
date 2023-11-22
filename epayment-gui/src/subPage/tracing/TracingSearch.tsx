@@ -1,8 +1,8 @@
-import { Card, Col, Container, Row, Table } from 'react-bootstrap'
+import { Col, Container, Row } from 'react-bootstrap'
 import { TextField, MenuItem, FormControl, Button, FormGroup } from '@mui/material'
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useState } from 'react';
-import { Transaction, Address } from '../../commonComponent/objectType/Blockchain';
+import { Transaction, Address } from '../../commonComponent/objectType/BlockchainType';
 import TxRow, { TxRowProps } from './TxRow';
 import txExample from './transactionExample.json'
 
@@ -32,11 +32,19 @@ const TracingSearch = () => {
         txRecord: JSON.parse(JSON.stringify(txExample))
     }
 
+    const demoAdd: Address = {
+        address: 'ASCSC2AS@#AS###',
+        totalReceived: 100,
+        totalSent: 98,
+        balance: 2.000,       //  totalReceived - totalSent
+        transcations: [demoTx.txRecord, demoTx.txRecord, demoTx.txRecord]
+    }
+
 
     const [state, setState] = useState<TX_state>({
         pageMode: pageMode.DEFAULT,
         searchCriteria: {
-            select_type: 'ADDRESS',
+            select_type: '',
             text_input: undefined
         }
     })
@@ -62,6 +70,38 @@ const TracingSearch = () => {
         });
     }
 
+    const clickSearch = () => {
+        switch (state.searchCriteria.select_type) {
+            case pageMode.ADDRESS:
+
+                // call api for searching address
+                setState({
+                    ...state,
+                    pageMode: pageMode.ADDRESS
+                });
+
+
+                
+                break;
+            case pageMode.TRANSACTION:
+
+                // call api for searching transaction
+                setState({
+                    ...state,
+                    pageMode: pageMode.TRANSACTION
+                });
+                
+                break;
+            default:
+                setState({
+                    ...state,
+                    pageMode: pageMode.DEFAULT
+                });
+                break;
+        }
+
+    }
+
 
     return(
         <Container className='Transaction_Search_field'>
@@ -79,9 +119,9 @@ const TracingSearch = () => {
                                     inputProps={{ 'aria-label': 'Without label' }}
                                 >
                                     <MenuItem value=""> <em>None</em> </MenuItem>
-                                    <MenuItem value={'ADDRESS'}>ADDRESS</MenuItem>
-                                    <MenuItem value={'Block'}>Block</MenuItem>
-                                    <MenuItem value={'Tx'}>Transaction</MenuItem>
+                                    <MenuItem value={pageMode.ADDRESS}>ADDRESS</MenuItem>
+                                    <MenuItem value={pageMode.BLOCK}>Block</MenuItem>
+                                    <MenuItem value={pageMode.TRANSACTION}>Transaction</MenuItem>
                                 </Select>
                                 {/* <FormHelperText>Choose searching target</FormHelperText> */}
                             </FormControl>
@@ -97,7 +137,7 @@ const TracingSearch = () => {
                     <Col xs={2}>
                         <Button 
                             variant="contained" 
-                            onClick={() => {}}
+                            onClick={() => clickSearch()}
                             style={{marginTop: "1rem"}}>Search</Button>
                     </Col>
                     {/* <Col></Col> */}
@@ -122,10 +162,32 @@ const TracingSearch = () => {
                     <Col>Result</Col>
                     <hr></hr>
                 </Row>
-                Transaction:
-                <div style={{marginTop: "1rem"}}>
-                    {TxRow(demoTx)}
-                </div>
+                {  state.pageMode === pageMode.TRANSACTION && <>
+                
+                    Transaction:
+                    <div style={{marginTop: "1rem"}}>
+                        {TxRow(demoTx)}
+                    </div>
+                </>
+                }
+
+                {  state.pageMode === pageMode.ADDRESS && <>
+                
+                    Address record:
+                    <div style={{marginTop: "1rem"}}>
+                        {demoAdd.transcations.map((tx => {
+                            return (
+                                <div style={{marginBottom: '1rem'}}>{TxRow({txRecord: tx})}</div>
+                            )
+                        }))}
+                    </div>
+                </>
+                }
+
+                
+
+                
+                
             </div>
         </Container>
     )

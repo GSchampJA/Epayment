@@ -1,5 +1,5 @@
-import { Card, Col, Container, Row, Table } from 'react-bootstrap'
-import { Transaction } from '../../commonComponent/objectType/Blockchain';
+import { Card, Col, Row, Table } from 'react-bootstrap'
+import { Transaction } from '../../commonComponent/objectType/BlockchainType';
 import ForwardSharpIcon from '@mui/icons-material/ForwardSharp';
 
 export interface TxRowProps {
