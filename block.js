@@ -57,8 +57,7 @@ class Block{
     #doubleHash(data){
         console.log(JSON.stringify(data))
         const hash=crypto.createHash('sha256')
-        var result=hash.update(JSON.stringify(data))
-        result=hash.copy().digest('hex')
+        var result=hash.copy().update(Buffer.from(JSON.stringify(data))).digest()
         hash.update(result)
         result = hash.digest('hex')
         return result
