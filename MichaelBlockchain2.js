@@ -1,4 +1,4 @@
-const SHA256 = require('crypto-js/sha256')
+const SHA256 = require('crypto-js').SHA256
 
 class Block{
     constructor(timestamp, data, previousHash = '') {
@@ -10,7 +10,7 @@ class Block{
         this.difficulty = 4;
     }
 
-    calculateHash() {
+    calculateHash() { 
         return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data) + this.nonce + this.difficulty).toString();
     }
 
@@ -30,7 +30,7 @@ class Block{
 
         let difficulty = lastBlock.difficulty;
 
-		difficulty = lastBlock.timestamp + 3000 > newBlockTime ? ++difficulty  : --difficulty;
+		difficulty = lastBlock.timestamp + 3000 > newBlockTime ? ++difficulty  : --difficulty; //Leave for TA 
 
 		if(difficulty < 1) difficulty = 1;
 

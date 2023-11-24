@@ -1,5 +1,7 @@
 crypto=require('crypto')
+storage=require('storage')
 
+// One wallet allows multiple address, but only one private key
 class wallet {
     constructor(){
         crypto.generateKeyPair('rsa', { 
