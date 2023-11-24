@@ -3,6 +3,7 @@ class p2pNetwork{
     constructor(IPaddress){
         this.connectedPeers=IPaddress
     }
+    //action = path; method = post...; data = transaction/block; contenttype = html/json/etc. 
     boardcast(action,method,data=null,contentType=null){
         let requestPromise=[]
         this.connectedPeers.forEach(element => {
@@ -11,7 +12,7 @@ class p2pNetwork{
         Promise.all(requestPromise).then(result=>{
             console.log(result)
         })
-    }
+    } //async
     async #message(url,method,data,contentType){
         if (method.toLowerCase()=='get'){
             try{

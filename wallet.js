@@ -1,7 +1,9 @@
 const { generateKeyPair,createECDH,createHash, generateKeyPairSync, } = require('node:crypto');
 const { base58, base64, } = require('@scure/base');
 const fs = require('fs')
+const storage=require('storage')
 
+// One wallet allows multiple address, but only one private key
 class wallet {
     // constructor(){
     //     const EC = require('elliptic').ec;
@@ -63,3 +65,4 @@ class wallet {
 }
 
 module.exports = {wallet}
+

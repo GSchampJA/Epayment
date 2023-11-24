@@ -11,6 +11,8 @@ router.get("/", function (req, res) {
     //2. Address
     //3. Block's info
     
+
+
 });
 
 app.post('/wallet/Create',function(req,res){
@@ -30,10 +32,11 @@ router.get("/wallet/WalletInfo", function (req, res) {
 
 router.get("/utxo", function (req, res) {
     //unspent transaction
+    res.send(storage.UTXO()) //should be sending the total UTXO or the address's UTXO?
 });
 
 //for testing only
-app.get('/createNewBlock',function(req,res){
+app.get('/CreateNewBlock',function(req,res){
     newheader=new block.BlockHeader('1.71','0','0',0,0,0)
     newTxn=new block.Transaction('0','0','script')
     newBlock=new block.Block(0,newheader,[newTxn,newTxn,newTxn,newTxn,newTxn,newTxn,newTxn,newTxn])
