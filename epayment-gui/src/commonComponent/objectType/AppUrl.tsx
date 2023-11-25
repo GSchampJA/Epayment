@@ -4,7 +4,7 @@ export enum AppUrl {
     Home = '/',
     Transaction = '/trace',
     ReactAmin = '/reactPage',
-    MyUTXOs = '/utxo',
+    MyUTXOs = '/utxos',
     Login = '/login',
     RegisterAC = '/register',
     MyAddress = '/myAddress',

@@ -151,3 +151,7 @@
 .noBorderLine {
   border: 5px solid transparent !important;
 }
+
+/* .horizontal-scrol{
+  overflowX: "auto"
+} */

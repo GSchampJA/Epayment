@@ -14,6 +14,7 @@ import { SideNavBar } from './commonComponent/navBar/SideNavBar';
 import RegisterPage from './subPage/auth/RegisterPage';
 import NotFoundPage from './subPage/otherPage/NotFoundPage';
 import MyAddressPage from './subPage/myAccount/MyAddress';
+import MyUtxosPage from './subPage/myAccount/MyUtxosPage';
 
 
 
@@ -53,7 +54,8 @@ const App = () => {
 
             {/* My wallet */}
             <Route path={AppUrl.MyAddress} element={<MyAddressPage />} />
-
+            <Route path={AppUrl.MyUTXOs} element={<MyUtxosPage />} />
+            
 
 
             <Route path="*" element={<NotFoundPage />} />
