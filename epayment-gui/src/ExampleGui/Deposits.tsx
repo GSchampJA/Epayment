@@ -8,14 +8,15 @@ function preventDefault(event: React.MouseEvent) {
 }
 
 export default function Deposits() {
+  const tdy = new Date()
   return (
     <React.Fragment>
-      <Title>Recent Deposits</Title>
+      <Title>Today Value</Title>
       <Typography component="p" variant="h4">
         $3,024.00
       </Typography>
       <Typography color="text.secondary" sx={{ flex: 1 }}>
-        on 15 March, 2019
+        on {tdy.toLocaleDateString()}
       </Typography>
       <div>
         <Link color="primary" href="#" onClick={preventDefault}>

@@ -48,6 +48,13 @@
   text-decoration: none;
 }
 
+.TopNavFont {
+  color: #FFFF;
+  font-size: medium;
+  text-decoration: none;
+}
+
+
 .NavBarButtonLink {
   color: #3875d1;
 }
@@ -107,4 +114,20 @@
   text-decoration: none;
   padding: 0rem !important;
   margin-left: 1rem;
+}
+
+/* Login & register */
+
+.LoginBorder_Card {
+  padding: 10px;
+  border-radius: 45px;
+  margin-top: 1rem;
+}
+
+
+/* Common */
+
+.zero_sidePadding {
+  padding-left: 0em !important;
+  padding-right: 0em !important;
 }
