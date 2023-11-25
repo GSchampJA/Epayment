@@ -1,15 +1,11 @@
-import { useContext, useReducer, useState } from "react";
+import { useContext, useReducer } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap"
 import { UserInfoContext } from "../../commonComponent/UserInfoContext";
 
 import Box from '@mui/material/Box';
-import Input from '@mui/material/Input';
 import TextField from '@mui/material/TextField';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import InputAdornment from '@mui/material/InputAdornment';
 import PasswordIcon from '@mui/icons-material/Password';
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import { AppUrl } from "../../commonComponent/objectType/AppUrl";
 
@@ -78,7 +74,7 @@ const RegisterPage = () => {
               <Col md={8}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                   <AccountCircle sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                  <TextField label="Username" variant="standard" 
+                  <TextField label="Username" variant="standard" value={state.accountInput.username}
                     onChange={(ref) => dispatch({ type: ActionType.UPDATE_ACCOUNT_INPUT, target: 'username', value: ref.target.value })} 
                   />
                 </Box>
@@ -90,7 +86,7 @@ const RegisterPage = () => {
               <Col md={8}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                   <PasswordIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                  <TextField label="New Password" variant="standard" type="password"
+                  <TextField label="New Password" variant="standard" type="password" value={state.accountInput.password}
                     onChange={(ref) => dispatch({ type: ActionType.UPDATE_ACCOUNT_INPUT, target: 'password', value: ref.target.value })} 
                   />
                 </Box>
@@ -102,7 +98,7 @@ const RegisterPage = () => {
               <Col md={8}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                   <PasswordIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                  <TextField label="Password Again" variant="standard" type="password"
+                  <TextField label="Password Again" variant="standard" type="password" value={state.accountInput.password2}
                     onChange={(ref) => dispatch({ type: ActionType.UPDATE_ACCOUNT_INPUT, target: 'password2', value: ref.target.value })} 
                   />
                 </Box>

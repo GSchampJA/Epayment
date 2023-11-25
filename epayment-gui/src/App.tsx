@@ -12,6 +12,8 @@ import { UserInfoProvider } from './commonComponent/UserInfoContext';
 import { TopAppBar } from './commonComponent/navBar/TopAppBar';
 import { SideNavBar } from './commonComponent/navBar/SideNavBar';
 import RegisterPage from './subPage/auth/RegisterPage';
+import NotFoundPage from './subPage/otherPage/NotFoundPage';
+import MyAddressPage from './subPage/myAccount/MyAddress';
 
 
 
@@ -48,6 +50,13 @@ const App = () => {
 
             <Route path={AppUrl.Login} element={<LoginPage />} />
             <Route path={AppUrl.RegisterAC} element={<RegisterPage />} />
+
+            {/* My wallet */}
+            <Route path={AppUrl.MyAddress} element={<MyAddressPage />} />
+
+
+
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>    
       
@@ -59,20 +68,3 @@ const App = () => {
 }
 
 export default App;
-
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.tsx</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>

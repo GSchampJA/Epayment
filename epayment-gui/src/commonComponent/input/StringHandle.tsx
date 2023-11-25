@@ -1,7 +1,7 @@
 
 export const split_FilePath = (path: string) => {
-    if (path == null || path == undefined) return ''
-    const paths = path.split('\\')
+    if (path === null || path === undefined) return ''
+    // const paths = path.split('\\')
 
     // console.log('split_FilePath:', paths)
     // console.log('filename:', paths[paths.length -1])
@@ -10,7 +10,7 @@ export const split_FilePath = (path: string) => {
 }
 
 export const extract_FileName = (path: string) => {
-    if (path == null || path == undefined) return ''
+    if (path === null || path === undefined) return ''
     const paths = path.split('\\')
 
     return paths[paths.length -1]

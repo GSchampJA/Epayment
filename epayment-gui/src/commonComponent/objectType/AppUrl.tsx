@@ -7,6 +7,9 @@ export enum AppUrl {
     MyUTXOs = '/utxo',
     Login = '/login',
     RegisterAC = '/register',
+    MyAddress = '/myAddress',
+
+    NotFound = '/404NotFound'
     
 }
 

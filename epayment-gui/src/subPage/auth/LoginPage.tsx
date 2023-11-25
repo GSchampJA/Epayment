@@ -10,7 +10,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import { AppUrl } from "../../commonComponent/objectType/AppUrl";
-import { extract_FileName, split_FilePath } from "../../commonComponent/input/StringHandle";
+import { extract_FileName } from "../../commonComponent/input/StringHandle";
 
 
 interface LoginState {
@@ -102,7 +102,7 @@ const LoginPage = () => {
               <Col md={8}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                   <AccountCircle sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                  <TextField label="Username" variant="standard"
+                  <TextField label="Username" variant="standard" value={state.accountInput.username}
                     onChange={(ref) => dispatch({ type: ActionType.UPDATE_ACCOUNT_INPUT, target: 'username', value: ref.target.value })} 
                   />
                 </Box>
@@ -114,7 +114,7 @@ const LoginPage = () => {
               <Col md={8}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                   <PasswordIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                  <TextField label="Password" variant="standard"
+                  <TextField label="Password" variant="standard" value={state.accountInput.password}
                     onChange={(ref) => dispatch({ type: ActionType.UPDATE_ACCOUNT_INPUT, target: 'password', value: ref.target.value })} 
                   />
                 </Box>
@@ -167,18 +167,3 @@ const LoginPage = () => {
 }
 
 export default LoginPage
-
-
-            {/* <div className="container col-lg-3 col-md-6 border rounded mt-3">
-                <h1 className="p-3">Login</h1>
-
-          <form onSubmit={() => {
-            // this.handleSubmit
-            }}>
-
-          </form>
-        </div>
-        <div className="container col-lg-3 col-md-6 border rounder mt-1 p-3 text-center">
-          New User? 
-          <Link to="/users/register">Register Here</Link>
-        </div> */}

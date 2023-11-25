@@ -43,7 +43,7 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
   const { open, toggleDrawer } = props;
 
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useContext(UserInfoContext);
+  const [userInfo] = useContext(UserInfoContext);
 
   return (
     <AppBar position="absolute" open={open}>

@@ -24,6 +24,7 @@ export const secondaryListItems = (
 
     <NavButton url={AppUrl.MyUTXOs} icon={<AssignmentIcon />} buttonTitle='UTXOs'/>
     <NavButton url={AppUrl.Transaction} icon={<AssignmentIcon />} buttonTitle='New transaction'/>
+    <NavButton url={AppUrl.MyAddress} icon={<AssignmentIcon />} buttonTitle='My Address'/>
 
   </React.Fragment>
 );

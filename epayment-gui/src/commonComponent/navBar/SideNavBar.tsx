@@ -67,7 +67,9 @@ export const SideNavBar = (props: {open: boolean, toggleDrawer: () => any}) => {
         <Divider sx={{ my: 1 }} />
 
 
-        {(userInfo.logIn) ? /** If login, pop my wallet information */
+        {
+          true ?
+        // (userInfo.logIn) ? /** If login, pop my wallet information */
           <> {secondaryListItems} </> : <></>
         }
       </List>
