@@ -3,7 +3,7 @@ const router = require('express').Router();
 
 
 router.get('/',(req,res) => {
-    res.send('hellp world')
+    res.send('hello world')
 })
 
 router.post('/',(req,res) => {
