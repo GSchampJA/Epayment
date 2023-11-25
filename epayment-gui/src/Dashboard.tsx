@@ -1,11 +1,5 @@
-import * as React from 'react';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-
-
-
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -14,16 +8,6 @@ import Paper from '@mui/material/Paper';
 import Chart from './ExampleGui/Chart';
 import Deposits from './ExampleGui/Deposits';
 import Orders from './ExampleGui/Orders';
-
-
-
-
-
-
-
-
-
-
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();

@@ -20,9 +20,9 @@ const TxRow = (props: TxRowProps) => {
                     <Card className='TransactionAdress_Card'>
                         <Table className='TransactionAdress_Table'>
                             <Row><Col>
-                                <a className='font_coinAmount'>
+                                <span className='font_coinAmount'>
                                     {txRecord?.fromTxAdd.sent??`0`}{" "}
-                                </a>
+                                </span>
                                      Coins from
                             </Col></Row>
                             <Row><Col style={{marginLeft: '1rem'}}>{txRecord?.fromTxAdd.address??``}</Col></Row>
@@ -38,7 +38,7 @@ const TxRow = (props: TxRowProps) => {
                                 <Card className='TransactionAdress_Card'>
                                     <Table className='TransactionAdress_Table'>
                                         <Row><Col>
-                                            <a className='font_coinAmount'>{address.received??`0`}{" "}</a>
+                                            <span  className='font_coinAmount'>{address.received??`0`}{" "}</span>
                                                 Coins to
                                         </Col></Row>
                                         <Row><Col style={{marginLeft: '1rem'}}>{address.address??``}</Col></Row>

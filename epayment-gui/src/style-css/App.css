@@ -48,6 +48,13 @@
   text-decoration: none;
 }
 
+.TopNavFont {
+  color: #FFFF;
+  font-size: medium;
+  text-decoration: none;
+}
+
+
 .NavBarButtonLink {
   color: #3875d1;
 }
