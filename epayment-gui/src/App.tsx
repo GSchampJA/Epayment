@@ -11,6 +11,7 @@ import { AppUrl } from './commonComponent/objectType/AppUrl';
 import { UserInfoProvider } from './commonComponent/UserInfoContext';
 import { TopAppBar } from './commonComponent/navBar/TopAppBar';
 import { SideNavBar } from './commonComponent/navBar/SideNavBar';
+import RegisterPage from './subPage/auth/RegisterPage';
 
 
 
@@ -43,7 +44,10 @@ const App = () => {
             
             <Route path={AppUrl.Transaction} element={<TracingSearch />} />
             <Route path={AppUrl.ReactAmin} element={<ReactPage />} />
+
+
             <Route path={AppUrl.Login} element={<LoginPage />} />
+            <Route path={AppUrl.RegisterAC} element={<RegisterPage />} />
           </Routes>
         </div>    
       
