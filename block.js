@@ -1,34 +1,55 @@
 crypto=require('crypto')
+const wallet = require('./wallet')
 
 class Transaction{ 
-    constructor(hash,index,script,number=0xFFFFFFFF,fromaddress,toaddress,fee){
-        this.hash=hash
-        this.index=index 
-        this.script=script //Logged script with public key, with signature(encrypted by private key) and public key, use public key to decrypt
-        this.number=number // transaction count
-        this.to.address=toaddress
-        this.fromaddress=fromaddress
+    constructor(transaction_input,transaction_output,fee){
+        this.txid=txid
+        this.txinCount=transaction_input.length // transaction count
+        this.txin=transaction_input
+        this.txoutputCount=transaction_output.length
+        this.txout=transaction_output
         this.fee=fee
-
-        this.transaction_output=this.transaction_output()
-
-
     }
 
-    transaction_output(receiverinfo) {
-        this.receiveraddr = 
-        this.amount
-    }
-
-    #transaction_input() {
-        this.txID
-        this.txIndex
-        this.signature
+    
+    isTransactionValid(tx){
+        const verify=crypto.createVerify('SHA256')
+        var publicKeyHash=tx.txin.utxo.txout.lockScript
+        var signature,publicKey=JSON.parse(tx.txin.unlockScript)
+        if(wallet.publicKeyHash(Buffer.from(publicKey))==publicKeyHash){
+            verify.update(Buffer.from(tx.txin.utxo.txout.lockScript))
+            verify.end()
+            if(verify.verify(Buffer.from(publicKey),signature)){
+                return(true)
+            }
+        }
+        return(false)
     }
     
     //function validate transaction()
     //throw signature and public key
     //according to script
+    createTransaction(){
+
+    }
+}
+
+
+
+//utxo=>transaction unspent, index => number of index of utxo to be spent
+
+class txin{
+    constructor(utxo,index,unlockScript){
+        this.utxo=utxo
+        this.index=index
+        this.unlockScript=unlockScript 
+    }
+}
+class txout{
+    constructor(amount,lockScript){
+        this.amount=amount
+        this.lockScript=lockScript  //Logged script with public key, with signature(encrypted by private key) and public key, use public key to decrypt 
+    }
 }
 
 class BlockHeader{
