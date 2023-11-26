@@ -10,7 +10,7 @@ class Transaction{
         this.txin=transaction_input
         this.txoutputCount=transaction_output.length
         this.txout=transaction_output
-        this.fee=fee
+        this.fee=fee 
         this.txid=this.#hashTx()
     }
 
@@ -18,7 +18,6 @@ class Transaction{
         return doubleHashLoop(this.fromAddress,this.toAddess,this.amount)
     }
 
-    
     isTransactionValid(tx){
         var publicKeyHash
         var signature,publicKey
@@ -61,13 +60,13 @@ class txout{
 }
 
 class BlockHeader{
-    constructor(previousBlockHeader,merkleRoot,timeStamp,target,nonce){
+    constructor(previousBlockHeader,merkleRoot,timeStamp){
         this.version=1
         this.previousBlockHeader=previousBlockHeader
         this.merkleRoot=merkleRoot
         this.timeStamp=timeStamp
-        this.target=target //=difficulty
-        this.nonce=nonce
+        this.difficulty=4 
+        this.nonce=0
     }   
 }
 
@@ -107,18 +106,17 @@ class Block{
     }
 
     mineBlock(lastBlock) {
-        while (this.currentBlockHash.substring(0, this.difficulty) != Array(this.difficulty + 1).join("0")) {
+        while (this.currentBlockHash.substring(0, this.blockHeader.difficulty) != Array(this.blockHeader.difficulty + 1).join("0")) {
             let timestamp = Date.now();
-			this.difficulty = this.adjustDifficulty(lastBlock, timestamp);
-
+			this.blockHeader.difficulty = this.adjustDifficulty(lastBlock, timestamp); 
             this.nonce++;
-            this.hash = this.#doubleHash();
+            this.currentBlockHash = this.#doubleHash();
         }
     }
 
     adjustDifficulty(lastBlock, newBlockTime) {
-        let difficulty = lastBlock.difficulty;
-		difficulty = lastBlock.timestamp + 3000 > newBlockTime ? ++difficulty  : --difficulty; //Leave for TA 
+        let difficulty = lastBlock.BlockHeader.difficulty;
+		difficulty = lastBlock.blockHeader.timestamp + 3000 > newBlockTime ? ++difficulty  : --difficulty;
 		if(difficulty < 1) difficulty = 1;
 		return difficulty;
 	}
