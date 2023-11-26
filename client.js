@@ -6,13 +6,13 @@ network=require('./network');
 wallet=require('./wallet');
 app=express()
 
+//Sync with netwrok every time booted with network class
+
 router.get("/", function (req, res) {
     //1. Transaction
     //2. Address
     //3. Block's info
     
-
-
 });
 
 app.post('/wallet/Create',function(req,res){
