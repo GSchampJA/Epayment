@@ -1,7 +1,8 @@
 const { generateKeyPair,createECDH,createHash, generateKeyPairSync, createSign } = require('node:crypto');
 const { base58, base64, } = require('@scure/base');
 const fs = require('fs');
-const { stringify } = require('node:querystring');
+const { Block,Transaction } = require('./block');
+const { doubleHashLoop }= require('./utility/doubleHash').default
 
 
 // One wallet allows multiple address, but only one private key
@@ -44,8 +45,10 @@ class wallet {
             },
           });
           console.log(publicKey.toString('hex'))
-          console.log(this.publicKeyHash(publicKey))
-          console.log((privateKey.toString('hex')))
+          console.log(this.publicKeyHash(publicKey.subarray(-64,-32))) 
+          console.log(publicKey.subarray(-64,-32).toString('hex'))     //getting x
+          console.log(publicKey.subarray(-32).toString('hex'))         //getting y
+          //console.log((privateKey.toString('hex')))
           var publicKeyHash=this.publicKeyHash(publicKey)
           if(!(this.walletAddress.has(publicKeyHash))){
             this.walletAddress.set(publicKeyHash,[privateKey.toString('hex'),publicKey.toString('hex')])
@@ -61,7 +64,7 @@ class wallet {
             type:'pkcs8'
             })
 
-          var tempPiblicKey=tempKey.export({
+          var tempPublicKey=tempKey.export({
             format: 'der',
             type: 'spki',
           })
@@ -71,7 +74,7 @@ class wallet {
           }else{
             console.log("Key is imported already.")
           }
-          return(tempPiblicKey)
+          return(tempPublicKey)
     }
       //txin=unlockScript=> signature, lockSript= txin.utxo.txout.lockScript=>public key hash
     signTransaction(txin,lockScript){
@@ -92,7 +95,7 @@ class wallet {
         console.log(privateKeyPem.toString())
         const signature = sign.sign(privateKeyPem);
         console.log(signature)
-        txin.unlockScript=JSON.stringify([signature.toString('hex'),publicKey])
+        txin.unlockScript=[signature.toString('hex'),publicKey]
         return(txin)
     }
   
@@ -107,6 +110,12 @@ class wallet {
 
     listUnspent(){
       
+    }
+
+    //sendToAddress => public key hash
+    createTransaction(sendToAddress,amount,fee=0.00001){
+        
+        tx=new Transaction(sendToAddress,amount)
     }
 }
 

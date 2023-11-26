@@ -1,26 +1,37 @@
 crypto=require('crypto')
 const wallet = require('./wallet')
+const { doubleHashLoop }= require('./utility/doubleHash').default
 
 class Transaction{ 
-    constructor(transaction_input,transaction_output,fee){
-        this.txid=txid
+    constructor(toAddess,amount,transaction_input,transaction_output,fee){
+        this.toAddess=toAddess
+        this.amount=amount
         this.txinCount=transaction_input.length // transaction count
         this.txin=transaction_input
         this.txoutputCount=transaction_output.length
         this.txout=transaction_output
         this.fee=fee
+        this.txid=this.#hashTx()
+    }
+
+    #hashTx(){
+        return doubleHashLoop(this.fromAddress,this.toAddess,this.amount)
     }
 
     
     isTransactionValid(tx){
-        const verify=crypto.createVerify('SHA256')
-        var publicKeyHash=tx.txin.utxo.txout.lockScript
-        var signature,publicKey=JSON.parse(tx.txin.unlockScript)
-        if(wallet.publicKeyHash(Buffer.from(publicKey))==publicKeyHash){
-            verify.update(Buffer.from(tx.txin.utxo.txout.lockScript))
-            verify.end()
-            if(verify.verify(Buffer.from(publicKey),signature)){
-                return(true)
+        var publicKeyHash
+        var signature,publicKey
+        for (txin in tx.txin){
+            publicKeyHash=txin.utxo.txout.lockScript
+            signature,publicKey=txin.unlockScript
+            if(wallet.publicKeyHash(Buffer.from(publicKey))==publicKeyHash){
+                const verify=crypto.createVerify('SHA256')
+                verify.update(Buffer.from(publicKeyHash))
+                verify.end()
+                if(verify.verify(Buffer.from(publicKey),signature)){
+                    return(true)
+                }
             }
         }
         return(false)
@@ -29,9 +40,6 @@ class Transaction{
     //function validate transaction()
     //throw signature and public key
     //according to script
-    createTransaction(){
-
-    }
 }
 
 

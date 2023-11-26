@@ -44,18 +44,11 @@ class BlockChain{
 
         return true;
     }
-    scanAllTx(txhash){
+    scanAllBlcok(address){
         for (let i = 1; i < this.blockchain.length; i++) {
-            const currentBlock = this.blockchain[i]
-            const previousBlock = this.blockchain[i - 1]
             
-            if (currentBlock.hash != currentBlock.calculateHash()) {
-                return false;
-            }
-
-            if (currentBlock.previousHash != previousBlock.hash) {
-                return false;
-            }
+            
+            
         }
 
         return true;
