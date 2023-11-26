@@ -21,6 +21,8 @@ db.on('error',(error)=> console.error(error))
 db.once('open',()=>console.log('Connect to database'))
 
 
+//Sync with netwrok every time booted with network class
+
 router.get("/", function (req, res) {
     //1. Transaction
     //2. Address
