@@ -17,7 +17,7 @@ router.get("/", function (req, res) {
 
 app.post('/wallet/Create',function(req,res){
     newwallet = req.body;
-
+    
     //calling wallet from wallet.js
     walletname = newwallet.wallet[0].walletname
     walletaddr = wallet.wallet(walletname)

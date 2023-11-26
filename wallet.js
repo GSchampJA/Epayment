@@ -2,7 +2,8 @@ const { generateKeyPair,createECDH,createHash, generateKeyPairSync, createSign }
 const { base58, base64, } = require('@scure/base');
 const fs = require('fs');
 const { Block,Transaction } = require('./block');
-const { doubleHashLoop }= require('./utility/doubleHash').default
+const { doubleHashLoop, publicKeyHashfunc, }= require('./utility/hashUtility')
+const {BlockChain} = require('./blockchain')
 
 
 // One wallet allows multiple address, but only one private key
@@ -17,18 +18,7 @@ class wallet {
         this.walletAddress=new Map()
         //this.walletAddress.push(this.createNewAddress())
     }
-    publicKeyHash(publicKey) {
-        var hash256=createHash('sha256')
-        hash256.update(publicKey)
-        var hashripemd = createHash('ripemd160')
-        var result='00'+hashripemd.update(hash256.digest()).digest('hex')
-        const hash=crypto.createHash('sha256')
-        var postfix=hash.copy().update(result).digest()
-        hash.update(postfix)
-        result += hash.digest('hex').substr(0,4)
-        result = Buffer.from(result.toString('hex'),'hex');
-        return (base58.encode(result))
-    }
+    
     createNewAddress(){
           const {
             publicKey,
@@ -45,11 +35,11 @@ class wallet {
             },
           });
           console.log(publicKey.toString('hex'))
-          console.log(this.publicKeyHash(publicKey.subarray(-64,-32))) 
+          console.log(publicKeyHashfunc(publicKey.subarray(-64,-32))) 
           console.log(publicKey.subarray(-64,-32).toString('hex'))     //getting x
           console.log(publicKey.subarray(-32).toString('hex'))         //getting y
           //console.log((privateKey.toString('hex')))
-          var publicKeyHash=this.publicKeyHash(publicKey)
+          var publicKeyHash=publicKeyHashfunc(publicKey)
           if(!(this.walletAddress.has(publicKeyHash))){
             this.walletAddress.set(publicKeyHash,[privateKey.toString('hex'),publicKey.toString('hex')])
           }else{
@@ -68,7 +58,7 @@ class wallet {
             format: 'der',
             type: 'spki',
           })
-          publicKeyHash=this.publicKeyHash(tempPiblicKey)
+          publicKeyHash=this.publicKeyHashfunc(tempPiblicKey)
           if(!(this.walletAddress.has(publicKeyHash))){
             this.walletAddress.set(publicKeyHash,[privateKey.toString('hex'),tempPiblicKey.toString('hex')])
           }else{
@@ -77,11 +67,11 @@ class wallet {
           return(tempPublicKey)
     }
       //txin=unlockScript=> signature, lockSript= txin.utxo.txout.lockScript=>public key hash
-    signTransaction(txin,lockScript){
+    signTransaction(txin,lockScript,txid){
         var privateKey=Buffer.from(this.walletAddress.get(lockScript)[0],'hex')
         var publicKey=this.walletAddress.get(lockScript)[1]
         const sign= createSign('SHA256')
-        sign.update(Buffer.from(lockScript,'hex'))
+        sign.update(Buffer.from(txid,'hex'))
         sign.end();
         var tempPrivate=crypto.createPrivateKey({
           key:privateKey,
@@ -106,17 +96,8 @@ class wallet {
       return(["MIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQg0sXtqil/SmSsq+XvcK6m0Np6SURmOxFVX570pKMJ1LGhRANCAAR6CGniaGteJEf9IQvScLejZrbvwYBTCFA+/XUpHNF4kK87ngtr1On3FZ5dardJuJ0H2e+Vgl83ckLmYUBuq3X5","MIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQglXpxJbCNdmCx1B76n/8t4vuYDcNkls8coEmBOfMzp+ShRANCAATuzVKGPrCfPz9v7MhzlD14V388SaAFxa+leU+qCxBxmFW1xaAQEUoDj9ICNVDdE5Z5SFSX30LAX5And8KLMGXQ"])
     }
 
-  
-
-    listUnspent(){
-      
-    }
 
     //sendToAddress => public key hash
-    createTransaction(sendToAddress,amount,fee=0.00001){
-        
-        tx=new Transaction(sendToAddress,amount)
-    }
 }
 
 module.exports = {wallet}

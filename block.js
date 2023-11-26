@@ -1,9 +1,9 @@
 crypto=require('crypto')
-const wallet = require('./wallet')
-const { doubleHashLoop }= require('./utility/doubleHash').default
-
+const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
+const moment=require('moment');
 class Transaction{ 
-    constructor(toAddess,amount,transaction_input,transaction_output,fee){
+    constructor(txid,toAddess,amount,transaction_input,transaction_output,fee){
+        this.txid=txid
         this.toAddess=toAddess
         this.amount=amount
         this.txinCount=transaction_input.length // transaction count
@@ -11,11 +11,6 @@ class Transaction{
         this.txoutputCount=transaction_output.length
         this.txout=transaction_output
         this.fee=fee
-        this.txid=this.#hashTx()
-    }
-
-    #hashTx(){
-        return doubleHashLoop(this.fromAddress,this.toAddess,this.amount)
     }
 
     
@@ -25,7 +20,7 @@ class Transaction{
         for (txin in tx.txin){
             publicKeyHash=txin.utxo.txout.lockScript
             signature,publicKey=txin.unlockScript
-            if(wallet.publicKeyHash(Buffer.from(publicKey))==publicKeyHash){
+            if(publicKeyHashfunc(Buffer.from(tx.txid))==publicKeyHash){
                 const verify=crypto.createVerify('SHA256')
                 verify.update(Buffer.from(publicKeyHash))
                 verify.end()
@@ -47,14 +42,16 @@ class Transaction{
 //utxo=>transaction unspent, index => number of index of utxo to be spent
 
 class txin{
-    constructor(utxo,index,unlockScript){
+    constructor(address,utxo,index,unlockScript){
+        this.fromAddress=address
         this.utxo=utxo
         this.index=index
         this.unlockScript=unlockScript 
     }
 }
 class txout{
-    constructor(amount,lockScript){
+    constructor(address,amount,lockScript){
+        this.toAddress=address
         this.amount=amount
         this.lockScript=lockScript  //Logged script with public key, with signature(encrypted by private key) and public key, use public key to decrypt 
     }
@@ -83,14 +80,14 @@ class Block{
     }
 
     hashBlockHeader(){
-        return this.#doubleHash(this.blockHeader)
+        return doubleHashLoop(this.blockHeader)
     }
     createMerkleRoot(txns){
         var result=txns
         while(true){
             var temp=[]
             if(result.length==1){
-                result=this.#doubleHash(result[0])
+                result=doubleHashLoop(result[0])
                 break
             }
             debugger
@@ -112,7 +109,7 @@ class Block{
 			this.difficulty = this.adjustDifficulty(lastBlock, timestamp);
 
             this.nonce++;
-            this.hash = this.#doubleHash();
+            this.hash = doubleHashLoop('123');
         }
     }
 
@@ -123,26 +120,28 @@ class Block{
 		return difficulty;
 	}
 
-    #doubleHash(data){
-        console.log(JSON.stringify(data))
-        const hash=crypto.createHash('sha256')
-        var result=hash.copy().update(Buffer.from(JSON.stringify(data))).digest()
-        hash.update(result)
-        result = hash.digest('hex')
-        return result
-    }
+    // new double hash is in utility now
+    // #doubleHash(data){
+    //     console.log(JSON.stringify(data))
+    //     const hash=crypto.createHash('sha256')
+    //     var result=hash.copy().update(Buffer.from(JSON.stringify(data))).digest()
+    //     hash.update(result)
+    //     result = hash.digest('hex')
+    //     return result
+    // }
+
     #hashPair(txn1,txn2){
         let hashTxn1,hashTxn2,subRoot
         if(txn2!=null){
-            hashTxn1=this.#doubleHash(txn1)
-            hashTxn2=this.#doubleHash(txn2)
-            subRoot=this.#doubleHash(hashTxn1+hashTxn2)
+            hashTxn1=doubleHashLoop(txn1)
+            hashTxn2=doubleHashLoop(txn2)
+            subRoot=doubleHashLoop(hashTxn1+hashTxn2)
         }else{
-            hashTxn1=this.#doubleHash(txn1)
-            subRoot=this.#doubleHash(hashTxn1+hashTxn1)
+            hashTxn1=doubleHashLoop(txn1)
+            subRoot=doubleHashLoop(hashTxn1+hashTxn1)
         }
         return subRoot
     }
 }
 
-module.exports = {Block,BlockHeader,Transaction}
+module.exports = {Block,BlockHeader,Transaction,txin,txout}

@@ -1,6 +1,7 @@
-const block=require('./block'),
-moment=require('moment');
-storage=require('storage');
+const {Block,BlockHeader,txin,txout}=require('./block');
+const moment=require('moment');
+const storage=require('storage');
+const minTxns=require("./utility/algorithm")
 
 class BlockChain{
     constructor(){
@@ -8,9 +9,9 @@ class BlockChain{
         this.blockchain=[this.#getGenesisBlock()]
     }
     #getGenesisBlock(){
-        let blockHeader=new block.BlockHeader(1,null,"0x1bc3300000000000000000000000000000000000000000000",moment().unix(),null,null)
+        let blockHeader=new BlockHeader(1,null,"0x1bc3300000000000000000000000000000000000000000000",moment().unix(),null,null)
 
-        return block.Block(1,blockHeader,null)
+        return Block(1,blockHeader,null)
     }
 
     getLatestBlock() {
@@ -44,17 +45,49 @@ class BlockChain{
 
         return true;
     }
-    scanAllBlcok(address){
-        for (let i = 1; i < this.blockchain.length; i++) {
-            
-            
-            
+
+    scanUnspentTx(addresses){
+        var map=new Map()
+        map=null
+        for (var block in this.blockchain) {
+            for(var tx in block.txns){
+                for(var txin in tx.txin){
+                    if (txin.fromAddress in addresses){
+                        map.delete(txin.utxo+txin.index.toString())
+                    }
+                }
+                for(var i =0; 1<tx.txoutputCount;i++){
+                    if (tx.txout[i].toAddress in addresses){
+                        map.set(block.blockIndex.toString()+':'+tx.txid+':'+i.toString(),tx.txout[i].amount)
+                    }
+                }
+            }
         }
 
-        return true;
+        return map
     }
-    searchTx(){
 
+    createTransaction(addresses,sendToAddress,amount,fee=0.00001){
+        var utxo=this.scanUnspentTx(addresses)
+        utxo=minTxns(utxo)
+        doubleHashLoop(sendToAddress,amount,moment().unix().toString())
+        for (address in utxo){
+            var tempTxin=new txin()
+        }
+        tx=new Transaction(txid,sendToAddress,amount)
+
+    }
+
+
+    searchTx(txid){
+        for (var block in this.blockchain) {
+            for(var tx in block.txns){
+                if(txid==tx.txid){
+                    return(tx)
+                }
+            }
+        }
+        return(null)
     }
 
 }
