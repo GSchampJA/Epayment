@@ -103,5 +103,5 @@ class wallet {
     //sendToAddress => public key hash
 }
 
-module.exports = {wallet}
+module.exports = wallet
 
