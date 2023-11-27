@@ -3,9 +3,10 @@ express=require('express'),
 block=require('./block'),
 blockchain=require('./blockchain')
 network=require('./network');
-wallet=require('./wallet');
+const wallet = require('./wallet');
 require('dotenv').config()
 const mongoose = require('mongoose')
+
 app=express()
 
 // connection to the database
@@ -15,7 +16,7 @@ mongoose.connect(process.env.DATABASE_URL)
 const db = mongoose.connection
 
 // server can accept json
-app.use(express.json)
+// app.use(express.json)
 
 db.on('error',(error)=> console.error(error))
 db.once('open',()=>console.log('Connect to database'))
@@ -23,7 +24,7 @@ db.once('open',()=>console.log('Connect to database'))
 
 //Sync with netwrok every time booted with network class
 
-router.get("/", function (req, res) {
+app.get("/", function (req, res) {
     //1. Transaction
     //2. Address
     //3. Block's info
@@ -31,21 +32,28 @@ router.get("/", function (req, res) {
 });
 
 app.post('/wallet/Create',function(req,res){
-    newwallet = req.body;
     
     //calling wallet from wallet.js
-    walletname = newwallet.wallet[0].walletname
-    walletaddr = wallet.wallet(walletname)
+      // Creating a new wallet instance
+    const walletInstance = new wallet();
+    
+    // Calling the createNewAddress function to generate a new address
+    walletInstance.createNewAddress();
+    
+    // Retrieving the newly created address from the wallet instance
+    const walletAddress = walletInstance.walletAddress;
+    // walletname = newwallet.wallet[0].walletname
+    // walletaddr = wallet.wallet(walletname)
 
-    res.send('Wallet address: ' + JSON.stringify(walletaddr));
+    res.send('Wallet address: ' + JSON.stringify(walletAddress));
 })
 
-router.get("/wallet/WalletInfo", function (req, res) {
+app.get("/wallet/WalletInfo", function (req, res) {
     //provide wallet information
 
 });
 
-router.get("/utxo", function (req, res) {
+app.get("/utxo", function (req, res) {
     //unspent transaction
     res.send(storage.UTXO()) //should be sending the total UTXO or the address's UTXO?
 });
