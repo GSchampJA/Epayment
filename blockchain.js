@@ -1,8 +1,11 @@
 const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
 const moment=require('moment');
-const storage=require('storage');
 const minTxns=require("./utility/algorithm")
 const {wallet}=require('./wallet')
+const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
+
+
+const coinbaseReward=0.00001
 
 class BlockChain{
     constructor(){
@@ -12,7 +15,7 @@ class BlockChain{
     #getGenesisBlock(){
         let blockHeader=new BlockHeader(1,null,"0x1bc3300000000000000000000000000000000000000000000",moment().unix(),null,null)
 
-        return Block(1,blockHeader,null)
+        return new Block(1,blockHeader,null)
     }
 
     getLatestBlock() {
@@ -94,7 +97,7 @@ class BlockChain{
             resultTx=new Transaction(txid,sendToAddress,amount,resultTxIn,resultTxOut,fee)
         }else{
             var change=new txout(inputAddress[0],balance-amount,inputAddress[0])
-            resultTxOut.push(txoutObj)
+            resultTxOut.push(change)
             var txoutObj=new txout(sendToAddress,amount,sendToAddress)
             resultTxOut.push(txoutObj)
             var txid=doubleHashLoop(...inputAddress,sendToAddress,inputAddress[0],amount,moment().unix().toString())
@@ -102,8 +105,19 @@ class BlockChain{
         }
         return resultTx
     }
+    //blcok => the minning block, address=> address that miner want the reward to 
+    createCoinbaseTx(block,address){
+        var totalTxFee=0
+        for(e in block.txns){
+            totalTxFee+=e.fee
+        }
+        var txOut=new txout(address,totalTxFee+coinbaseReward,address)
+        var txid=doubleHashLoop(address,(totalTxFee+coinbaseReward).toString(),moment().unix().toString())
+        var resultTx=new Transaction(txid,address,totalTxFee+coinbaseReward,['coinbase'],[txOut],0)
+        return resultTx
+    }
 
-    searchTxWithIndex(txid.blockIndex){
+    searchTxWithIndex(txid,blockIndex){
         for(var tx in this.BlockChain[blockIndex].txns){
             if(txid==tx.txid){
                 return(tx)

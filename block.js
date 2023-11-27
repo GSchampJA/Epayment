@@ -1,25 +1,35 @@
 crypto=require('crypto')
 const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 const moment=require('moment');
+
+//transaction_input,transaction_output must be array
 class Transaction{ 
     constructor(txid,toAddess,amount,transaction_input,transaction_output,fee){
         this.txid=txid
         this.toAddess=toAddess
         this.amount=amount
         this.txinCount=transaction_input.length // transaction count
-        this.txin=transaction_input
+        this.txin=transaction_input //array
         this.txoutputCount=transaction_output.length
-        this.txout=transaction_output
+        this.txout=transaction_output ///array
         this.fee=fee 
     }
 
-    isTransactionValid(tx){
+    isTransactionValid(){
+        debugger;
         var publicKeyHash
         var signature,publicKey
-        for (txin in tx.txin){
-            publicKeyHash=txin.utxo.txout.lockScript
-            signature,publicKey=txin.unlockScript
-            if(publicKeyHashfunc(Buffer.from(tx.txid))==publicKeyHash){
+        if(this.txin[0]=="coinbase" && this.txinCount==1){
+            return true
+        }
+        for (var i=0;i<this.txinCount;i++){
+            if(this.txin[i]=="coinbase"){
+                continue
+            }
+            console.log(txin)
+            publicKeyHash=txin[i].utxo.txout.lockScript
+            signature,publicKey=txin[i].unlockScript
+            if(publicKeyHashfunc(Buffer.from(this.txid))==publicKeyHash){
                 const verify=crypto.createVerify('SHA256')
                 verify.update(Buffer.from(publicKeyHash))
                 verify.end()
@@ -66,7 +76,7 @@ class BlockHeader{
         this.nonce=0
     }   
 }
-
+//blockindex => height
 class Block{
     constructor(blockIndex,blockHeader,txns){
         this.blockIndex=blockIndex
@@ -79,7 +89,7 @@ class Block{
     }
 
     hashBlockHeader(){
-        return doubleHashLoop(this.blockHeader)
+        return this.#doubleHash(this.blockHeader)
     }
     createMerkleRoot(txns){
         var result=txns
@@ -119,14 +129,14 @@ class Block{
 	}
 
     // new double hash is in utility now
-    // #doubleHash(data){
-    //     console.log(JSON.stringify(data))
-    //     const hash=crypto.createHash('sha256')
-    //     var result=hash.copy().update(Buffer.from(JSON.stringify(data))).digest()
-    //     hash.update(result)
-    //     result = hash.digest('hex')
-    //     return result
-    // }
+    #doubleHash(data){
+        console.log(JSON.stringify(data))
+        const hash=crypto.createHash('sha256')
+        var result=hash.copy().update(Buffer.from(JSON.stringify(data))).digest()
+        hash.update(result)
+        result = hash.digest('hex')
+        return result
+    }
 
     #hashPair(txn1,txn2){
         let hashTxn1,hashTxn2,subRoot

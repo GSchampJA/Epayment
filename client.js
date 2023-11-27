@@ -8,7 +8,7 @@ require('dotenv').config()
 const mongoose = require('mongoose')
 
 app=express()
-
+const blockchainObj=new blockchain.BlockChain()
 // connection to the database
 // need to download mongodb into local storage
 // paste the local mongodb link to .env file to connect do the connection of mongodb
@@ -61,14 +61,20 @@ app.get("/utxo", function (req, res) {
 });
 
 //for testing only
+//create keypairs first
 app.get('/CreateNewBlock',function(req,res){
-    newheader=new block.BlockHeader('1.71','0','0',0,0,0)
-    newTxn=new block.Transaction('0','0','script')
-    newBlock=new block.Block(0,newheader,[newTxn,newTxn,newTxn,newTxn,newTxn,newTxn,newTxn,newTxn])
-    console.log(newBlock)
-    p2p=new network.p2pNetwork(['172.25.218.149:8333',])
-    p2p.boardcast('/createNewBlock','get')
-    res.send('new block added')
+    const {wallet}=require('./wallet');
+    const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
+    wallet.importPrivateKey("308184020100301006072a8648ce3d020106052b8104000a046d306b020101042047eba4323fe49eb1e4ff406207f484bd56b00af180da380d4cfe2c7ae8550dfda14403420004afbe7934ab7ce1c7ebf01b56c675a05a86a5d0eb4764b0414eabb118ccee990d16003eb55e095a3ec631181ced898aba2162ab8a2a79e2d08b11ebf7bfc6525c");
+    var blockchain=require('./blockchain')
+    obj=new blockchain.BlockChain();
+    debugger;
+    var coinBaseTx=obj.createCoinbaseTx([],'1khUJ4r2r1Wf6D7ZmRpZGSKA1E6dXnf');
+    coinBaseTx.isTransactionValid()
+    var blockheaderObj= new BlockHeader('1',null,'1701107223');
+    var blockObj=new Block(2,blockheaderObj,[coinBaseTx]);
+    obj.blockchain.push(blockObj);
+
 })
 
 var server = app.listen(8333,function(){
