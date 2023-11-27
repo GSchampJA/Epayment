@@ -38,3 +38,39 @@ Open MongoDBCompass, use the following db connection URL
 ```
 mongodb://localhost:27017
 ```
+
+### Redis (Storage - Memory)
+Install UBuntu (Windows)
+
+Open Terminal, enter following command:
+```
+wsl --install
+```
+
+After installing Ubuntu, type following command to enter Linux:
+```
+wsl
+```
+
+Install redis in Linux:
+```
+sudo apt-get install redis
+```
+
+Open redis client:
+```
+redis-cli
+```
+
+Open redis server:
+```
+redis-server
+```
+
+Can checkout for more info in:
+```
+[[https://www.mongodb.com/try/download/community](https://learn.microsoft.com/en-us/windows/wsl/install)](https://learn.microsoft.com/en-us/windows/wsl/install)
+```
+
+
+
