@@ -3,11 +3,11 @@ const { base58, base64, } = require('@scure/base');
 const fs = require('fs');
 const { Block,Transaction } = require('./block');
 const { doubleHashLoop, publicKeyHashfunc, }= require('./utility/hashUtility')
-const {BlockChain} = require('./blockchain')
 
 
 // One wallet allows multiple address, but only one private key
 class wallet {
+  static walletAddress=new Map()
     // constructor(){
     //     const EC = require('elliptic').ec;
     //     const ec = new EC('secp256k1');
@@ -15,11 +15,10 @@ class wallet {
         
     // }
     constructor(){
-        this.walletAddress=new Map()
         //this.walletAddress.push(this.createNewAddress())
     }
     
-    createNewAddress(){
+    static createNewAddress(){
           const {
             publicKey,
             privateKey,
@@ -67,7 +66,8 @@ class wallet {
           return(tempPublicKey)
     }
       //txin=unlockScript=> signature, lockSript= txin.utxo.txout.lockScript=>public key hash
-    signTransaction(txin,lockScript,txid){
+    static signTransaction(txin,lockScript,txid){
+        try{
         var privateKey=Buffer.from(this.walletAddress.get(lockScript)[0],'hex')
         var publicKey=this.walletAddress.get(lockScript)[1]
         const sign= createSign('SHA256')
@@ -87,6 +87,9 @@ class wallet {
         console.log(signature)
         txin.unlockScript=[signature.toString('hex'),publicKey]
         return(txin)
+      }catch(e){
+        console.log('No key imported')
+      }
     }
   
 

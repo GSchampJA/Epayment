@@ -1,4 +1,5 @@
 const { base58, base64, } = require('@scure/base');
+const { generateKeyPair,createECDH,createHash, generateKeyPairSync, createSign } = require('node:crypto');
 
 function doubleHashLoop(){
     const hash=crypto.createHash('sha256')

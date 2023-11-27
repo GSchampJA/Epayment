@@ -1,6 +1,6 @@
 function minTxns(list,target){
     var start=0,sum=0
-    list=[...list.values()].sort((a, b) => a[1] - b[1])
+    list=[...list.entries()].sort((a, b) => a[1] - b[1])
     var result=[]
     var temp=[]
     for (var i=start;i<list.length;i++){
@@ -20,7 +20,9 @@ function minTxns(list,target){
     const listLen = result.map((x) => x.length);
     var minLen=Math.min(...listLen)
     result = result.filter((word) => word.length == minLen);
-    return(result[0])
+    if(result[0]){
+        return(result[0])
+    }else return(false)
     
 }
 

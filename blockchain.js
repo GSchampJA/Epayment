@@ -1,7 +1,8 @@
-const {Block,BlockHeader,txin,txout}=require('./block');
+const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
 const moment=require('moment');
 const storage=require('storage');
 const minTxns=require("./utility/algorithm")
+const {wallet}=require('./wallet')
 
 class BlockChain{
     constructor(){
@@ -66,20 +67,53 @@ class BlockChain{
 
         return map
     }
-
+    //tempTxInfo[0]=blockIndex,tempTxInfo[1]=txid,tempTxInfo[2]=vout Index=>my unspent address
     createTransaction(addresses,sendToAddress,amount,fee=0.00001){
+        var resultTxOut=[]  
+        var resultTxIn=[]
+        var balance=0
+        var resultTx //resulted tx
         var utxo=this.scanUnspentTx(addresses)
-        utxo=minTxns(utxo)
-        doubleHashLoop(sendToAddress,amount,moment().unix().toString())
+        var txid
+        var inputAddress=[]  //all wallet addresses used in txin
+        utxo=minTxns(utxo,amount+fee)
+        if(utxo==false)return 0
         for (address in utxo){
-            var tempTxin=new txin()
+            balance+=address[1]
+            var tempTxInfo=address[0].split(':')
+            var tempTx=this.searchTxWithIndex(tempTxInfo[1],tempTxInfo[0])
+            inputAddress.push(tempTx.txout[tempTxInfo[2]].toAddress)
+            var tempTxin=new txin(tempTx.txout[tempTxInfo[2]].toAddress,tempTxInfo[1],tempTxInfo[2],null)
+            tempTxin=wallet.signTransaction(tempTxin,sendToAddress,tempTxInfo[1])
+            resultTxIn.push(tempTxin)
         }
-        tx=new Transaction(txid,sendToAddress,amount)
-
+        if(balance==amount+fee){
+            var txoutObj=new txout(sendToAddress,amount,sendToAddress)
+            resultTxOut.push(txoutObj)
+            txid=doubleHashLoop(...inputAddress,sendToAddress,amount,moment().unix().toString())
+            resultTx=new Transaction(txid,sendToAddress,amount,resultTxIn,resultTxOut,fee)
+        }else{
+            var change=new txout(inputAddress[0],balance-amount,inputAddress[0])
+            resultTxOut.push(txoutObj)
+            var txoutObj=new txout(sendToAddress,amount,sendToAddress)
+            resultTxOut.push(txoutObj)
+            var txid=doubleHashLoop(...inputAddress,sendToAddress,inputAddress[0],amount,moment().unix().toString())
+            resultTx=new Transaction(txid,sendToAddress,amount,resultTxIn,resultTxOut,fee)
+        }
+        return resultTx
     }
 
+    searchTxWithIndex(txid.blockIndex){
+        for(var tx in this.BlockChain[blockIndex].txns){
+            if(txid==tx.txid){
+                return(tx)
+            }
+        }
+        return(null)
+    }
 
-    searchTx(txid){
+    //find block transaction from database
+    searchTxInBlock(txid){
         for (var block in this.blockchain) {
             for(var tx in block.txns){
                 if(txid==tx.txid){

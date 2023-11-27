@@ -39,7 +39,7 @@ class Transaction{
 
 
 //utxo=>transaction unspent, index => number of index of utxo to be spent
-
+//from address is not the utxo sender, but the of the utxo receiver
 class txin{
     constructor(address,utxo,index,unlockScript){
         this.fromAddress=address
