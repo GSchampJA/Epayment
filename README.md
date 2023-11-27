@@ -24,3 +24,12 @@ yarn install
 ```
 yarn start
 ```
+
+### MongoDB (Storage)
+Go to this link to download MongoDB
+```
+https://www.mongodb.com/try/download/community
+```
+
+Excecute and select all default value to install
+Install MongoSBCompass too, can help you easier to manage DB
