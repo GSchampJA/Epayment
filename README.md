@@ -66,11 +66,3 @@ Open redis server:
 ```
 redis-server
 ```
-
-Can checkout for more info in:
-```
-[[https://www.mongodb.com/try/download/community](https://learn.microsoft.com/en-us/windows/wsl/install)](https://learn.microsoft.com/en-us/windows/wsl/install)
-```
-
-
-
