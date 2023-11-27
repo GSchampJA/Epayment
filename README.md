@@ -33,3 +33,8 @@ https://www.mongodb.com/try/download/community
 
 Excecute and select all default value to install
 Install MongoSBCompass too, can help you easier to manage DB
+
+Open MongoDBCompass, use the following db connection URL
+```
+mongodb://localhost:27017
+```
