@@ -40,7 +40,7 @@ mongodb://localhost:27017
 ```
 
 ### Redis (Storage - Memory)
-Install UBuntu (Windows)
+Install Windows Subsystem for Linux (WSL)
 
 Open Terminal, enter following command:
 ```
