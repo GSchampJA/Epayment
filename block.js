@@ -2,53 +2,22 @@ crypto=require('crypto')
 const { time } = require('console');
 const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 const moment=require('moment');
+
+//transaction_input,transaction_output must be array
 class Transaction{ 
     constructor(txid,toAddess,amount,transaction_input,transaction_output,fee,timestamp){
         this.txid=txid
         this.toAddess=toAddess
         this.amount=amount
         this.txinCount=transaction_input.length // transaction count
-        this.txin=transaction_input
+        this.txin=transaction_input //array
         this.txoutputCount=transaction_output.length
-        this.txout=transaction_output
+        this.txout=transaction_output ///array
         this.fee=fee 
         this.timestamp=timestamp
     }
 
-    isTransactionValid(tx){
-        var publicKeyHash
-        var signature,publicKey
-        for (txin in tx.txin){
-            publicKeyHash=txin.utxo.txout.lockScript
-            signature,publicKey=txin.unlockScript
-            if(publicKeyHashfunc(Buffer.from(tx.txid))==publicKeyHash){
-                const verify=crypto.createVerify('SHA256')
-                verify.update(tx.txid)
-                verify.end()
-                if(verify.verify(Buffer.from(publicKey),signature) && this.#verifyTxHash(tx)){
-                    return(true)
-                }
-            }
-        }
-        return(false)
-    }
 
-    #verifyTxHash(tx){
-        var inAddress=[]
-        var outAddress=[]
-        for (address in tx.txin){
-            inAddress.push(address.fromAddress)
-        }
-        for (address in tx.txout){
-            outAddressAddress.push(address.toAddress)
-        }
-        var tempHash= doubleHashLoop(...inAddress,...outAddress,tx.amount,tx.timestamp)
-        if(tempHash==tx.txid){
-            return true
-        }else{
-            return false
-        }
-    }
     
     //function validate transaction()
     //throw signature and public key
@@ -85,7 +54,7 @@ class BlockHeader{
         this.nonce=0
     }   
 }
-
+//blockindex => height
 class Block{
     constructor(blockIndex,blockHeader,txns){
         this.blockIndex=blockIndex
@@ -98,7 +67,7 @@ class Block{
     }
 
     hashBlockHeader(){
-        return doubleHashLoop(this.blockHeader)
+        return this.#doubleHash(this.blockHeader)
     }
     createMerkleRoot(txns){
         var result=txns
@@ -138,14 +107,14 @@ class Block{
 	}
 
     // new double hash is in utility now
-    // #doubleHash(data){
-    //     console.log(JSON.stringify(data))
-    //     const hash=crypto.createHash('sha256')
-    //     var result=hash.copy().update(Buffer.from(JSON.stringify(data))).digest()
-    //     hash.update(result)
-    //     result = hash.digest('hex')
-    //     return result
-    // }
+    #doubleHash(data){
+        console.log(JSON.stringify(data))
+        const hash=crypto.createHash('sha256')
+        var result=hash.copy().update(Buffer.from(JSON.stringify(data))).digest()
+        hash.update(result)
+        result = hash.digest('hex')
+        return result
+    }
 
     #hashPair(txn1,txn2){
         let hashTxn1,hashTxn2,subRoot

@@ -1,9 +1,11 @@
 const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
 const moment=require('moment');
-const storage=require('storage');
 const minTxns=require("./utility/algorithm")
-const {wallet}=require('./wallet');
-const { time } = require('console');
+const {wallet}=require('./wallet')
+const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
+
+
+const coinbaseReward=0.00001
 
 class BlockChain{
     constructor(){
@@ -13,8 +15,10 @@ class BlockChain{
     #getGenesisBlock(){
         let blockHeader=new BlockHeader(1,null,"0x1bc3300000000000000000000000000000000000000000000",moment().unix(),null,null)
 
-        return Block(1,blockHeader,null)
+        return new Block(1,blockHeader,null)
     }
+
+
 
     getLatestBlock() {
         return this.blockchain[this.blockchain.length - 1];
@@ -50,16 +54,18 @@ class BlockChain{
 
     scanUnspentTx(addresses){
         var map=new Map()
-        map=null
-        for (var block in this.blockchain) {
-            for(var tx in block.txns){
-                for(var txin in tx.txin){
-                    if (txin.fromAddress in addresses){
+        for (var block of this.blockchain) {
+            if(block.blockIndex==1){
+                continue
+            }
+            for(var tx of block.txns){
+                for(var txin of tx.txin){
+                    if (txin!='coinbase' && addresses.has(txin.fromAddress)){
                         map.delete(txin.utxo+txin.index.toString())
                     }
                 }
-                for(var i =0; 1<tx.txoutputCount;i++){
-                    if (tx.txout[i].toAddress in addresses){
+                for(var i =0; i<tx.txoutputCount;i++){
+                    if (addresses.has(tx.txout[i].toAddress)){
                         map.set(block.blockIndex.toString()+':'+tx.txid+':'+i.toString(),tx.txout[i].amount)
                     }
                 }
@@ -69,23 +75,27 @@ class BlockChain{
         return map
     }
     //tempTxInfo[0]=blockIndex,tempTxInfo[1]=txid,tempTxInfo[2]=vout Index=>my unspent address
-    createTransaction(addresses,sendToAddress,amount,fee=0.00001){
+    createTransaction(sendToAddress,amount,fee=0.00001){
         var resultTxOut=[]  
         var resultTxIn=[]
         var balance=0
         var resultTx //resulted tx
-        var utxo=this.scanUnspentTx(addresses)
+        var utxo=this.scanUnspentTx(wallet.walletAddress)
         var txid
         var inputAddress=[]  //all wallet addresses used in txin
-        utxo=minTxns(utxo,amount+fee)
+        utxo=minTxns.minTxns(utxo,amount+fee)
         if(utxo==false)return 0
-        for (address in utxo){
+        for (var address of utxo){
+            // if(address==undefined){
+            //     continue
+            // }
             balance+=address[1]
             var tempTxInfo=address[0].split(':')
             var tempTx=this.searchTxWithIndex(tempTxInfo[1],tempTxInfo[0])
-            inputAddress.push(tempTx.txout[tempTxInfo[2]].toAddress)
+            var myAddress=tempTx.txout[tempTxInfo[2]].toAddress
+            inputAddress.push(myAddress)
             var tempTxin=new txin(tempTx.txout[tempTxInfo[2]].toAddress,tempTxInfo[1],tempTxInfo[2],null)
-            tempTxin=wallet.signTransaction(tempTxin,sendToAddress,tempTxInfo[1])
+            tempTxin=wallet.signTransaction(tempTxin,myAddress,tempTxInfo[1])
             resultTxIn.push(tempTxin)
         }
         var timeNow=moment().unix().toString()
@@ -96,7 +106,7 @@ class BlockChain{
             resultTx=new Transaction(txid,sendToAddress,amount,resultTxIn,resultTxOut,fee,timeNow)
         }else{
             var change=new txout(inputAddress[0],balance-amount,inputAddress[0])
-            resultTxOut.push(txoutObj)
+            resultTxOut.push(change)
             var txoutObj=new txout(sendToAddress,amount,sendToAddress)
             resultTxOut.push(txoutObj)
             var txid=doubleHashLoop(...inputAddress,sendToAddress,inputAddress[0],amount,timeNow)
@@ -105,8 +115,62 @@ class BlockChain{
         return resultTx
     }
 
+    isTransactionValid(tx){
+        var checked=true
+        if(tx.txin[0]=="coinbase" && tx.txinCount==1){
+            return true
+        }
+        for (var i=0;i<tx.txinCount;i++){
+            if(tx.txin[i]=="coinbase"){
+                continue
+            }
+            console.log(tx.txin)
+            var publicKeyHash=tx.txin[i].fromAddress   //this.txout[i].utxo.txout.lockScript
+            var [signature,publicKey]=tx.txin[i].unlockScript
+            if(!(this.isTxNotSpent(tx.txin[i].utxo) || this.searchTxInBlock(tx.txin[i].utxo))){
+                return false
+            }
+            if(publicKeyHashfunc(Buffer.from(tx.txid))==publicKeyHash){
+                const verify=crypto.createVerify('SHA256')
+                verify.update(Buffer.from(publicKeyHash))
+                verify.end()
+                if(!verify.verify(Buffer.from(publicKey),signature)){
+                    checked=false
+                }
+            }
+        }
+        return(checked)
+        //retrun true only when signature is the same, the txid is not in spent before, tx exist
+    }
+    isTxNotSpent(txid){
+        for (var block of this.blockchain) {
+            if(block.blockIndex==1){
+                continue
+            }
+            for(var tx of block.txns){
+                for(var txin of tx.txin){
+                    if(txin.utxo==txid){
+                        return false
+                    }
+                }
+            }
+        }
+        return(true)
+    }
+    //blcok => the minning block, address=> address that miner want the reward to 
+    createCoinbaseTx(block,address){
+        var totalTxFee=0
+        for(e in block.txns){
+            totalTxFee+=e.fee
+        }
+        var txOut=new txout(address,totalTxFee+coinbaseReward,address)
+        var txid=doubleHashLoop(address,(totalTxFee+coinbaseReward).toString(),moment().unix().toString())
+        var resultTx=new Transaction(txid,address,totalTxFee+coinbaseReward,['coinbase'],[txOut],0)
+        return resultTx
+    }
+
     searchTxWithIndex(txid,blockIndex){
-        for(var tx in this.BlockChain[blockIndex].txns){
+        for(var tx of this.blockchain[parseInt(blockIndex)-1].txns){
             if(txid==tx.txid){
                 return(tx)
             }
@@ -116,14 +180,17 @@ class BlockChain{
 
     //find block transaction from database
     searchTxInBlock(txid){
-        for (var block in this.blockchain) {
-            for(var tx in block.txns){
+        for (var block of this.blockchain) {
+            if(block.blockIndex==1){
+                continue
+            }
+            for(var tx of block.txns){
                 if(txid==tx.txid){
                     return(tx)
                 }
             }
         }
-        return(null)
+        return(false)
     }
 
 }

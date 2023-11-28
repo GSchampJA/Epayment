@@ -34,7 +34,7 @@ class wallet {
             },
           });
           // console.log(publicKey.toString('hex'))
-          // console.log(publicKeyHashfunc(publicKey.subarray(-64,-32))) 
+          console.log(publicKeyHashfunc(publicKey.subarray(-64,-32))) 
           // console.log(publicKey.subarray(-64,-32).toString('hex'))     //getting x
           // console.log(publicKey.subarray(-32).toString('hex'))         //getting y
           console.log((privateKey.toString('hex')))
@@ -46,8 +46,8 @@ class wallet {
           }
     }
     //generating public key from private key
-    importPrivateKey(privateKey){
-      privateKey=
+    static importPrivateKey(privateKey){
+      privateKey=Buffer.from(privateKey,'hex')
         var tempKey=crypto.createPublicKey({
             key: privateKey,
             format: 'der',
@@ -58,9 +58,9 @@ class wallet {
             format: 'der',
             type: 'spki',
           })
-          publicKeyHash=this.publicKeyHashfunc(tempPiblicKey)
+          var publicKeyHash=publicKeyHashfunc(tempPublicKey)
           if(!(this.walletAddress.has(publicKeyHash))){
-            this.walletAddress.set(publicKeyHash,[privateKey.toString('hex'),tempPiblicKey.toString('hex')])
+            this.walletAddress.set(publicKeyHash,[privateKey.toString('hex'),tempPublicKey.toString('hex')])
           }else{
             console.log("Key is imported already.")
           }
@@ -68,6 +68,7 @@ class wallet {
     }
       //txin=unlockScript=> signature, lockSript= txin.utxo.txout.lockScript=>public key hash
     static signTransaction(txin,lockScript,txid){
+
         try{
         var privateKey=Buffer.from(this.walletAddress.get(lockScript)[0],'hex')
         var publicKey=this.walletAddress.get(lockScript)[1]
@@ -94,7 +95,7 @@ class wallet {
     }
   
 
-    getAllAddress(){
+    static getAllAddress(){
       //the private key can be stored in db
       // therefore, retrieving account from db
       return(["MIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQg0sXtqil/SmSsq+XvcK6m0Np6SURmOxFVX570pKMJ1LGhRANCAAR6CGniaGteJEf9IQvScLejZrbvwYBTCFA+/XUpHNF4kK87ngtr1On3FZ5dardJuJ0H2e+Vgl83ckLmYUBuq3X5","MIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQglXpxJbCNdmCx1B76n/8t4vuYDcNkls8coEmBOfMzp+ShRANCAATuzVKGPrCfPz9v7MhzlD14V388SaAFxa+leU+qCxBxmFW1xaAQEUoDj9ICNVDdE5Z5SFSX30LAX5And8KLMGXQ"])
@@ -104,5 +105,5 @@ class wallet {
     //sendToAddress => public key hash
 }
 
-module.exports = wallet
+module.exports = {wallet}
 
