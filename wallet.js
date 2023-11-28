@@ -68,6 +68,7 @@ class wallet {
     }
       //txin=unlockScript=> signature, lockSript= txin.utxo.txout.lockScript=>public key hash
     static signTransaction(txin,lockScript,txid){
+
         try{
         var privateKey=Buffer.from(this.walletAddress.get(lockScript)[0],'hex')
         var publicKey=this.walletAddress.get(lockScript)[1]

@@ -15,31 +15,7 @@ class Transaction{
         this.fee=fee 
     }
 
-    isTransactionValid(){
-        debugger;
-        var publicKeyHash
-        var signature,publicKey
-        if(this.txin[0]=="coinbase" && this.txinCount==1){
-            return true
-        }
-        for (var i=0;i<this.txinCount;i++){
-            if(this.txin[i]=="coinbase"){
-                continue
-            }
-            console.log(txin)
-            publicKeyHash=txin[i].utxo.txout.lockScript
-            signature,publicKey=txin[i].unlockScript
-            if(publicKeyHashfunc(Buffer.from(this.txid))==publicKeyHash){
-                const verify=crypto.createVerify('SHA256')
-                verify.update(Buffer.from(publicKeyHash))
-                verify.end()
-                if(verify.verify(Buffer.from(publicKey),signature)){
-                    return(true)
-                }
-            }
-        }
-        return(false)
-    }
+
     
     //function validate transaction()
     //throw signature and public key

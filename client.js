@@ -5,7 +5,7 @@ blockchain=require('./blockchain')
 network=require('./network');
 const wallet = require('./wallet');
 require('dotenv').config()
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 app=express()
 const blockchainObj=new blockchain.BlockChain()
@@ -66,14 +66,26 @@ app.get('/CreateNewBlock',function(req,res){
     const {wallet}=require('./wallet');
     const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
     wallet.importPrivateKey("308184020100301006072a8648ce3d020106052b8104000a046d306b020101042047eba4323fe49eb1e4ff406207f484bd56b00af180da380d4cfe2c7ae8550dfda14403420004afbe7934ab7ce1c7ebf01b56c675a05a86a5d0eb4764b0414eabb118ccee990d16003eb55e095a3ec631181ced898aba2162ab8a2a79e2d08b11ebf7bfc6525c");
+    wallet.importPrivateKey("308184020100301006072a8648ce3d020106052b8104000a046d306b020101042048c7d7391eb2809703fc3c1e7b3a4e1dc92a130bfbc6182e0849cd19b8d783c3a14403420004fc977c70de2066e2d8e27ac1e5a61d2194059a3bbc5c66bda637227c29b3fe39b80696965e0dbcf1d1ba073cda002e7f5384bba083fb060210cc7b0507ac519f");
+    // console.log(wallet.walletAddress)
     var blockchain=require('./blockchain')
     obj=new blockchain.BlockChain();
-    debugger;
-    var coinBaseTx=obj.createCoinbaseTx([],'1khUJ4r2r1Wf6D7ZmRpZGSKA1E6dXnf');
-    coinBaseTx.isTransactionValid()
-    var blockheaderObj= new BlockHeader('1',null,'1701107223');
-    var blockObj=new Block(2,blockheaderObj,[coinBaseTx]);
-    obj.blockchain.push(blockObj);
+    var coinBaseTx=obj.createCoinbaseTx([],'1qwFqhokiTASXVSTqQyNAuit6qfbMpx');
+    console.log(coinBaseTx.txid) //check if create tx input address is the same as the coinbase one
+    if(obj.isTransactionValid(coinBaseTx)){
+        var blockheaderObj= new BlockHeader('1',null,'1701107223');
+        var blockObj=new Block(2,blockheaderObj,[coinBaseTx]);
+        obj.blockchain.push(blockObj);
+        // console.log(obj)
+        var unspentedTx=obj.scanUnspentTx(new Map([['1qwFqhokiTASXVSTqQyNAuit6qfbMpx','1']]))
+        var addressToSearch=[...unspentedTx.keys()][0].split(':')[1]
+        var searchedTx=obj.searchTxWithIndex(addressToSearch,2)
+        // console.log("searchedTx : ")
+        // console.log(searchedTx)
+        var newTx=obj.createTransaction("1UK87hKPfkepZNgjE8bLaqrUj2o8dG5",0.000005,fee=0.000005)
+        console.log(obj.isTransactionValid(newTx))
+        console.log(newTx)
+    }
 
 })
 
