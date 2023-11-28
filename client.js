@@ -62,7 +62,7 @@ app.post('/verifyTx',function(req,res){
 // create wallet - user account 
 //          --> return (private key: string) to f/e ; b/e keeps the username, private key and public keys(address)
 app.post('/wallet/Create',function(req,res){
-    
+    const {wallet}=require('./wallet');
     //calling wallet from wallet.js
       // Creating a new wallet instance
     //const walletInstance = new wallet();
