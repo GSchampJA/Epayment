@@ -8,6 +8,7 @@ export enum AppUrl {
     Login = '/login',
     RegisterAC = '/register',
     MyAddress = '/myAddress',
+    MyTx = '/myTransaction',
 
     NotFound = '/404NotFound'
     

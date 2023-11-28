@@ -8,17 +8,17 @@ enum pageMode {
     LOADING = 'Loading'
 }
 
-interface MyAddress_state {
+interface MyTx_state {
     pageMode: pageMode,
     allAddress?: string[]
 
 }
 
-const  MyAddressPage = () => {
+const  MyTxPage = () => {
 
     const [userInfo] = useContext(UserInfoContext);
 
-    const [state, setState] = useState<MyAddress_state>({
+    const [state, setState] = useState<MyTx_state>({
         pageMode: pageMode.DEFAULT
     });
 
@@ -29,10 +29,10 @@ const  MyAddressPage = () => {
         <Container className='mt-3'>
             <Card className='noBorderLine'>
                 <Row>
-                    <Col md={4} className='mt-1'>{"My current address(s)"}</Col>
+                    <Col md={4} className='mt-1'>{"My current transaction(s)"}</Col>
                     <Col></Col>
                     <Col md={4}><Button variant="contained" 
-                        onClick={() => {}}>Create New Address</Button>
+                        onClick={() => {}}>Create New Transaction</Button>
                     </Col>
                 </Row>
                 <hr></hr>
@@ -42,4 +42,4 @@ const  MyAddressPage = () => {
     )
 }
 
-export default  MyAddressPage
+export default  MyTxPage
