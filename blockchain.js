@@ -2,7 +2,8 @@ const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
 const moment=require('moment');
 const storage=require('storage');
 const minTxns=require("./utility/algorithm")
-const {wallet}=require('./wallet')
+const {wallet}=require('./wallet');
+const { time } = require('console');
 
 class BlockChain{
     constructor(){
@@ -87,23 +88,24 @@ class BlockChain{
             tempTxin=wallet.signTransaction(tempTxin,sendToAddress,tempTxInfo[1])
             resultTxIn.push(tempTxin)
         }
+        var timeNow=moment().unix().toString()
         if(balance==amount+fee){
             var txoutObj=new txout(sendToAddress,amount,sendToAddress)
             resultTxOut.push(txoutObj)
-            txid=doubleHashLoop(...inputAddress,sendToAddress,amount,moment().unix().toString())
-            resultTx=new Transaction(txid,sendToAddress,amount,resultTxIn,resultTxOut,fee)
+            txid=doubleHashLoop(...inputAddress,sendToAddress,amount,timeNow)
+            resultTx=new Transaction(txid,sendToAddress,amount,resultTxIn,resultTxOut,fee,timeNow)
         }else{
             var change=new txout(inputAddress[0],balance-amount,inputAddress[0])
             resultTxOut.push(txoutObj)
             var txoutObj=new txout(sendToAddress,amount,sendToAddress)
             resultTxOut.push(txoutObj)
-            var txid=doubleHashLoop(...inputAddress,sendToAddress,inputAddress[0],amount,moment().unix().toString())
-            resultTx=new Transaction(txid,sendToAddress,amount,resultTxIn,resultTxOut,fee)
+            var txid=doubleHashLoop(...inputAddress,sendToAddress,inputAddress[0],amount,timeNow)
+            resultTx=new Transaction(txid,sendToAddress,amount,resultTxIn,resultTxOut,fee,timeNow)
         }
         return resultTx
     }
 
-    searchTxWithIndex(txid.blockIndex){
+    searchTxWithIndex(txid,blockIndex){
         for(var tx in this.BlockChain[blockIndex].txns){
             if(txid==tx.txid){
                 return(tx)

@@ -33,11 +33,11 @@ class wallet {
               format: 'der',
             },
           });
-          console.log(publicKey.toString('hex'))
-          console.log(publicKeyHashfunc(publicKey.subarray(-64,-32))) 
-          console.log(publicKey.subarray(-64,-32).toString('hex'))     //getting x
-          console.log(publicKey.subarray(-32).toString('hex'))         //getting y
-          //console.log((privateKey.toString('hex')))
+          // console.log(publicKey.toString('hex'))
+          // console.log(publicKeyHashfunc(publicKey.subarray(-64,-32))) 
+          // console.log(publicKey.subarray(-64,-32).toString('hex'))     //getting x
+          // console.log(publicKey.subarray(-32).toString('hex'))         //getting y
+          console.log((privateKey.toString('hex')))
           var publicKeyHash=publicKeyHashfunc(publicKey)
           if(!(this.walletAddress.has(publicKeyHash))){
             this.walletAddress.set(publicKeyHash,[privateKey.toString('hex'),publicKey.toString('hex')])
@@ -47,6 +47,7 @@ class wallet {
     }
     //generating public key from private key
     importPrivateKey(privateKey){
+      privateKey=
         var tempKey=crypto.createPublicKey({
             key: privateKey,
             format: 'der',

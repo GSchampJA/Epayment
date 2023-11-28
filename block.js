@@ -1,8 +1,9 @@
 crypto=require('crypto')
+const { time } = require('console');
 const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 const moment=require('moment');
 class Transaction{ 
-    constructor(txid,toAddess,amount,transaction_input,transaction_output,fee){
+    constructor(txid,toAddess,amount,transaction_input,transaction_output,fee,timestamp){
         this.txid=txid
         this.toAddess=toAddess
         this.amount=amount
@@ -11,6 +12,7 @@ class Transaction{
         this.txoutputCount=transaction_output.length
         this.txout=transaction_output
         this.fee=fee 
+        this.timestamp=timestamp
     }
 
     isTransactionValid(tx){
@@ -21,14 +23,31 @@ class Transaction{
             signature,publicKey=txin.unlockScript
             if(publicKeyHashfunc(Buffer.from(tx.txid))==publicKeyHash){
                 const verify=crypto.createVerify('SHA256')
-                verify.update(Buffer.from(publicKeyHash))
+                verify.update(tx.txid)
                 verify.end()
-                if(verify.verify(Buffer.from(publicKey),signature)){
+                if(verify.verify(Buffer.from(publicKey),signature) && this.#verifyTxHash(tx)){
                     return(true)
                 }
             }
         }
         return(false)
+    }
+
+    #verifyTxHash(tx){
+        var inAddress=[]
+        var outAddress=[]
+        for (address in tx.txin){
+            inAddress.push(address.fromAddress)
+        }
+        for (address in tx.txout){
+            outAddressAddress.push(address.toAddress)
+        }
+        var tempHash= doubleHashLoop(...inAddress,...outAddress,tx.amount,tx.timestamp)
+        if(tempHash==tx.txid){
+            return true
+        }else{
+            return false
+        }
     }
     
     //function validate transaction()
