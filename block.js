@@ -59,10 +59,10 @@ class txout{
 }
 
 class BlockHeader{
-    constructor(previousBlockHeader,merkleRoot,timeStamp){
+    constructor(previousBlockHeader,timeStamp){
         this.version=1
         this.previousBlockHeader=previousBlockHeader
-        this.merkleRoot=merkleRoot
+        this.merkleRoot=""
         this.timeStamp=timeStamp
         this.difficulty=4 
         this.nonce=0
@@ -74,15 +74,13 @@ class Block{
         this.blockIndex=blockIndex
         this.blockHeader=blockHeader
         this.txns=txns
-        if(blockIndex!=1){
-            this.blockHeader.merkleRoot=this.createMerkleRoot(this.txns)
-            this.currentBlockHash=this.hashBlockHeader()
-        }
+        this.blockHeader.merkleRoot=this.createMerkleRoot(this.txns)
+        this.currentBlockHash=this.hashBlockHeader()
+    }
+    hashBlockHeader(){
+        return doubleHashLoop(this.blockHeader)
     }
 
-    hashBlockHeader(){
-        return this.#doubleHash(this.blockHeader)
-    }
     createMerkleRoot(txns){
         var result=txns
         while(true){
@@ -91,7 +89,6 @@ class Block{
                 result=doubleHashLoop(result[0])
                 break
             }
-            debugger
             for(let i=0;i<result.length;i+=2){
                 if(i+1<result.length){
                     temp.push(this.#hashPair(txns[i],txns[i+1]))
@@ -104,13 +101,41 @@ class Block{
         return result
     }
 
-    mineBlock(lastBlock) {
-        while (this.currentBlockHash.substring(0, this.blockHeader.difficulty) != Array(this.blockHeader.difficulty + 1).join("0")) {
-            let timestamp = Date.now();
-			this.blockHeader.difficulty = this.adjustDifficulty(lastBlock, timestamp); 
-            this.nonce++;
-            this.hash = doubleHashLoop('123');
+    // mineBlock() {
+    //     var hash
+    //     while (hash.substring(0, this.blockHeader.difficulty) != Array(this.blockHeader.difficulty + 1).join("0")) {
+	// 		this.blockHeader.difficulty = this.adjustDifficulty(lastBlock, timestamp); 
+    //         this.blockHeader.nonce++;
+    //         this.currentBlockHash = this.#doubleHash(this.blockHeader)
+    //     }
+    // }
+    // mineBlock() {
+    //     var pB=this.blockHeader.previousBlockHeader
+    //     var ts=this.blockHeader.timeStamp
+    //     var markle=this.blockHeader.merkleRoot
+    //     var difficulty=this.blockHeader.difficulty
+    //     var nonce=0
+    //     let hash = doubleHashLoop(1,pB,markle,ts,difficulty,nonce)
+    //     while (hash.substring(0, 4) !== '0000') {
+    //         nonce+=1
+    //         hash = doubleHashLoop(1,pB,markle,ts,difficulty,nonce)
+    //         console.log(hash)
+    //         console.log(nonce)
+    //     }
+    //     return(nonce)
+        
+    // }
+
+    mineBlock() {
+        let hash = doubleHashLoop(this.blockHeader)
+        while (hash.substring(0, 4) !== '0000') {
+            this.blockHeader.nonce+=1
+            hash = doubleHashLoop(this.blockHeader)
+            console.log(hash)
+            console.log(this.blockHeader.nonce)
         }
+        return(this.blockHeader.nonce)
+        
     }
 
     adjustDifficulty(lastBlock, newBlockTime) {
@@ -121,14 +146,7 @@ class Block{
 	}
 
     // new double hash is in utility now
-    #doubleHash(data){
-        console.log(JSON.stringify(data))
-        const hash=createHash('sha256')
-        var result=hash.copy().update(Buffer.from(JSON.stringify(data))).digest()
-        hash.update(result)
-        result = hash.digest('hex')
-        return result
-    }
+
 
     #hashPair(txn1,txn2){
         let hashTxn1,hashTxn2,subRoot

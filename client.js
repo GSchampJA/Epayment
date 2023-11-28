@@ -8,6 +8,7 @@ require('dotenv').config()
 const mongoose = require('mongoose');
 const { p2pNetwork } = require('./network');
 const { post } = require('superagent');
+const moment=require('moment');
 
 app=express()
 const blockchainObj=new blockchain.BlockChain()
@@ -16,14 +17,15 @@ const networkObj=new p2pNetwork()
 // connection to the database
 // need to download mongodb into local storage
 // paste the local mongodb link to .env file to connect do the connection of mongodb
-mongoose.connect(process.env.DATABASE_URL)
-const db = mongoose.connection
+
+// mongoose.connect(process.env.DATABASE_URL)
+// const db = mongoose.connection
 
 // server can accept json
 // app.use(express.json)
 
-db.on('error',(error)=> console.error(error))
-db.once('open',()=>console.log('Connect to database'))
+// db.on('error',(error)=> console.error(error))
+// db.once('open',()=>console.log('Connect to database'))
 
 app.use(express.json())
 //Sync with netwrok every time booted with network class
@@ -55,7 +57,7 @@ app.post('/verifyTx',function(req,res){
         res.send("rejected")
     }
     if(blockchainObj.isTransactionValid(newTx)){
-        
+        blockchainObj.txPool.push(newTx)
     }
 })
 
@@ -78,6 +80,19 @@ app.post('/wallet/Create',function(req,res){
     [publicKeyHash,privateKey]=wallet.wallet.createNewAddress()
 
     res.send('Wallet address: ' + JSON.stringify(walletAddress));
+})
+
+app.get("/mining/:address",function(req,res){
+    if(blockchainObj.txPool.length!=0){
+    var txns=[...blockchainObj.txPool]
+    }else var txns=[]
+    blockchainObj.txPool=[]
+    var newBlockHeader=new block.BlockHeader(blockchainObj.getLatestBlock().currentBlockHash,moment().unix().toString())
+    var coinbaseTx=blockchainObj.createCoinbaseTx(txns,req.params.address)
+    var newBlock=new block.Block(blockchainObj.length+1,newBlockHeader,[coinbaseTx,...txns])
+    newBlock.blockHeader.nonce=newBlock.mineBlock()
+    newBlock.blockHeader.currentBlockHash=newBlock.hashBlockHeader()
+    console.log(newBlock)
 })
 
 app.get("/wallet/unspentTx", function (req, res) {

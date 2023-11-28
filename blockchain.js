@@ -9,14 +9,15 @@ const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 const coinbaseReward=0.00001
 
 class BlockChain{
-    constructor(){
-        this.length=1 
+    constructor(){ 
+        this.txPool=[]
+        this.length=[]
         this.blockchain=[this.#getGenesisBlock()]
     }
     #getGenesisBlock(){
-        let blockHeader=new BlockHeader(1,null,"0x1bc3300000000000000000000000000000000000000000000",moment().unix(),null,null)
+        let blockHeader=new BlockHeader("0x0",moment().unix())
 
-        return new Block(1,blockHeader,null)
+        return new Block(1,blockHeader,[null])
     }
 
 
@@ -176,9 +177,9 @@ class BlockChain{
         return(true)
     }
     //blcok => the minning block, address=> address that miner want the reward to 
-    createCoinbaseTx(block,address){
+    createCoinbaseTx(txns,address){
         var totalTxFee=0
-        for(e in block.txns){
+        for(e of txns){
             totalTxFee+=e.fee
         }
         var txOut=new txout(address,totalTxFee+coinbaseReward,address)

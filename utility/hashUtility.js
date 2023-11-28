@@ -5,7 +5,7 @@ function doubleHashLoop(){
     const hash=createHash('sha256')
     var tmepHash = hash.copy()
     for(var i=0;i<arguments.length;i++){
-        hash.update(arguments[i].toString())
+        hash.update(Buffer.from(JSON.stringify(arguments[i])))
     }
     tmepHash.update(hash.digest())
     result = tmepHash.digest('hex')
