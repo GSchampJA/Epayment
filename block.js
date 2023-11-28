@@ -20,7 +20,6 @@ class Transaction{
 
 
     createTxID(){
-        debugger
         const hash=crypto.createHash('sha256')
         var tmepHash = hash.copy()
         for (var txin of this.txin){

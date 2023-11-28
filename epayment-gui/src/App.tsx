@@ -15,6 +15,7 @@ import RegisterPage from './subPage/auth/RegisterPage';
 import NotFoundPage from './subPage/otherPage/NotFoundPage';
 import MyAddressPage from './subPage/myAccount/MyAddress';
 import MyUtxosPage from './subPage/myAccount/MyUtxosPage';
+import MyTxPage from './subPage/myAccount/MyTransaction';
 
 
 
@@ -54,6 +55,8 @@ const App = () => {
 
             {/* My wallet */}
             <Route path={AppUrl.MyAddress} element={<MyAddressPage />} />
+            <Route path={AppUrl.MyTx} element={<MyTxPage />} />
+            
             <Route path={AppUrl.MyUTXOs} element={<MyUtxosPage />} />
             
 

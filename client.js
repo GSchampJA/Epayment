@@ -35,6 +35,12 @@ app.get("/", function (req, res) {
     
 });
 
+app.get("/getBlockBlockchain/:blockIndex",(req, res)=>{
+    // open db
+    // get blockchain based on id
+    // return block info
+})
+
 //get request from req of address,amount and fee
 app.post('/createTx',function(req,res){
     var newTx=blockchainObj.createTransaction(address,amount,fee=0.00001)

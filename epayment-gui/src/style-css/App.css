@@ -152,6 +152,10 @@
   border: 5px solid transparent !important;
 }
 
+.bgColor-grey {
+  background-color: #e5e6ec !important;
+}
+
 /* .horizontal-scrol{
   overflowX: "auto"
 } */
