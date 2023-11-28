@@ -25,4 +25,6 @@ function publicKeyHashfunc(publicKey) {
     return (base58.encode(result))
 }
 
+
+
 module.exports= {doubleHashLoop,publicKeyHashfunc}

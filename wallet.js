@@ -8,6 +8,7 @@ const { doubleHashLoop, publicKeyHashfunc, }= require('./utility/hashUtility')
 // One wallet allows multiple address, but only one private key
 class wallet {
   static walletAddress=new Map()
+  //key=>public key hash, value[0]=>private,[1]=>public
     // constructor(){
     //     const EC = require('elliptic').ec;
     //     const ec = new EC('secp256k1');
@@ -44,6 +45,7 @@ class wallet {
           }else{
             console.log("Key is imported already.")
           }
+          return([publicKeyHash.toString('hex'),privateKey.toString('hex'),publicKey.toString('hex')])
     }
     //generating public key from private key
     static importPrivateKey(privateKey){

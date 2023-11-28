@@ -2,11 +2,11 @@ crypto=require('crypto')
 const { time } = require('console');
 const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 const moment=require('moment');
-
+const { createHash } = require('node:crypto');
+const { json } = require('express');
 //transaction_input,transaction_output must be array
 class Transaction{ 
-    constructor(txid,toAddess,amount,transaction_input,transaction_output,fee,timestamp){
-        this.txid=txid
+    constructor(toAddess,amount,transaction_input,transaction_output,fee,timestamp){
         this.toAddess=toAddess
         this.amount=amount
         this.txinCount=transaction_input.length // transaction count
@@ -15,9 +15,25 @@ class Transaction{
         this.txout=transaction_output ///array
         this.fee=fee 
         this.timestamp=timestamp
+        this.txid=this.createTxID()
     }
 
 
+    createTxID(){
+        debugger
+        const hash=crypto.createHash('sha256')
+        var tmepHash = hash.copy()
+        for (var txin of this.txin){
+            hash.update(Buffer.from(JSON.stringify(txin)))
+        }
+        for(var txout of this.txout){
+            hash.update(Buffer.from(JSON.stringify(txout)))
+        }
+        hash.update(this.timestamp)
+        tmepHash.update(hash.digest())
+        var result = tmepHash.digest('hex')
+        return(result)
+    }
     
     //function validate transaction()
     //throw signature and public key

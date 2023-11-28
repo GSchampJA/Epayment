@@ -102,15 +102,13 @@ class BlockChain{
         if(balance==amount+fee){
             var txoutObj=new txout(sendToAddress,amount,sendToAddress)
             resultTxOut.push(txoutObj)
-            txid=doubleHashLoop(...inputAddress,sendToAddress,amount,timeNow)
-            resultTx=new Transaction(txid,sendToAddress,amount,resultTxIn,resultTxOut,fee,timeNow)
+            resultTx=new Transaction(sendToAddress,amount,resultTxIn,resultTxOut,fee,timeNow)
         }else{
             var change=new txout(inputAddress[0],balance-amount,inputAddress[0])
             resultTxOut.push(change)
             var txoutObj=new txout(sendToAddress,amount,sendToAddress)
             resultTxOut.push(txoutObj)
-            var txid=doubleHashLoop(...inputAddress,sendToAddress,inputAddress[0],amount,timeNow)
-            resultTx=new Transaction(txid,sendToAddress,amount,resultTxIn,resultTxOut,fee,timeNow)
+            resultTx=new Transaction(sendToAddress,amount,resultTxIn,resultTxOut,fee,timeNow)
         }
         return resultTx
     }
@@ -127,7 +125,7 @@ class BlockChain{
             console.log(tx.txin)
             var publicKeyHash=tx.txin[i].fromAddress   //this.txout[i].utxo.txout.lockScript
             var [signature,publicKey]=tx.txin[i].unlockScript
-            if(!(this.isTxNotSpent(tx.txin[i].utxo) || this.searchTxInBlock(tx.txin[i].utxo))){
+            if(!(this.isTxNotSpent(tx.txin[i].utxo)) || !(this.searchTxInBlock(tx.txin[i].utxo)) ||!(this.isTxHashValid(tx))){
                 return false
             }
             if(publicKeyHashfunc(Buffer.from(tx.txid))==publicKeyHash){
@@ -142,6 +140,26 @@ class BlockChain{
         return(checked)
         //retrun true only when signature is the same, the txid is not in spent before, tx exist
     }
+
+    isTxHashValid(tx){
+        const hash=crypto.createHash('sha256')
+        var tmepHash = hash.copy()
+        for (var txin of tx.txin){
+            hash.update(Buffer.from(JSON.stringify(txin)))
+        }
+        for(var txout of tx.txout){
+            hash.update(Buffer.from(JSON.stringify(txout)))
+        }
+        hash.update(tx.timestamp)
+        tmepHash.update(hash.digest())
+        var result = tmepHash.digest('hex')
+        if (result==tx.txid){
+            return true
+        }else{
+            return false
+        }
+    }
+
     isTxNotSpent(txid){
         for (var block of this.blockchain) {
             if(block.blockIndex==1){
@@ -164,8 +182,7 @@ class BlockChain{
             totalTxFee+=e.fee
         }
         var txOut=new txout(address,totalTxFee+coinbaseReward,address)
-        var txid=doubleHashLoop(address,(totalTxFee+coinbaseReward).toString(),moment().unix().toString())
-        var resultTx=new Transaction(txid,address,totalTxFee+coinbaseReward,['coinbase'],[txOut],0)
+        var resultTx=new Transaction(address,totalTxFee+coinbaseReward,['coinbase'],[txOut],0,moment().unix().toString())
         return resultTx
     }
 
