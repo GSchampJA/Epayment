@@ -8,6 +8,7 @@ const transactionSchema = new Schema({
         required: true
     },
     fullNodeList:{
+        // full blockchain
         list: new Schema({
             address:{
                 type: String,
@@ -16,6 +17,7 @@ const transactionSchema = new Schema({
         })
     },
     neighborList:{
+        // the forking blockchain
         list: new Schema({
             address:{
                 type: String,
@@ -23,4 +25,5 @@ const transactionSchema = new Schema({
             },
         })
     }
+    // utxo: confirmed transcation
 })

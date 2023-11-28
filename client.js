@@ -31,6 +31,12 @@ app.get("/", function (req, res) {
     
 });
 
+app.get("/getBlockBlockchain/:blockIndex",(req, res)=>{
+    // open db
+    // get blockchain based on id
+    // return block info
+})
+
 // create wallet - user account 
 //          --> return (private key: string) to f/e ; b/e keeps the username, private key and public keys(address)
 app.post('/wallet/Create',function(req,res){
