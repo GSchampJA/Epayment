@@ -1,8 +1,7 @@
-crypto=require('crypto')
 const { time } = require('console');
 const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 const moment=require('moment');
-const { createHash } = require('node:crypto');
+const { createHash } = require('crypto');
 const { json } = require('express');
 //transaction_input,transaction_output must be array
 class Transaction{ 
@@ -20,7 +19,7 @@ class Transaction{
 
 
     createTxID(){
-        const hash=crypto.createHash('sha256')
+        const hash=createHash('sha256')
         var tmepHash = hash.copy()
         for (var txin of this.txin){
             hash.update(Buffer.from(JSON.stringify(txin)))
@@ -124,7 +123,7 @@ class Block{
     // new double hash is in utility now
     #doubleHash(data){
         console.log(JSON.stringify(data))
-        const hash=crypto.createHash('sha256')
+        const hash=createHash('sha256')
         var result=hash.copy().update(Buffer.from(JSON.stringify(data))).digest()
         hash.update(result)
         result = hash.digest('hex')

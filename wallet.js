@@ -1,4 +1,4 @@
-const { generateKeyPair,createECDH,createHash, generateKeyPairSync, createSign } = require('node:crypto');
+const { generateKeyPair,createECDH,createHash, createPrivateKey,createPublicKey,generateKeyPairSync, createSign } = require('crypto');
 const { base58, base64, } = require('@scure/base');
 const fs = require('fs');
 const { Block,Transaction } = require('./block');
@@ -8,7 +8,7 @@ const { doubleHashLoop, publicKeyHashfunc, }= require('./utility/hashUtility')
 // One wallet allows multiple address, but only one private key
 class wallet {
   static walletAddress=new Map()
-  //key=>public key hash, value[0]=>private,[1]=>public
+  //key=>public key hash, value[0]=>private,[1]=>public  key:[private,public]
     // constructor(){
     //     const EC = require('elliptic').ec;
     //     const ec = new EC('secp256k1');
@@ -45,12 +45,12 @@ class wallet {
           }else{
             console.log("Key is imported already.")
           }
-          return([publicKeyHash.toString('hex'),privateKey.toString('hex'),publicKey.toString('hex')])
+          return([publicKeyHash.toString('hex'),privateKey.toString('hex')])
     }
     //generating public key from private key
     static importPrivateKey(privateKey){
       privateKey=Buffer.from(privateKey,'hex')
-        var tempKey=crypto.createPublicKey({
+        var tempKey=createPublicKey({
             key: privateKey,
             format: 'der',
             type:'pkcs8'
@@ -77,7 +77,7 @@ class wallet {
         const sign= createSign('SHA256')
         sign.update(Buffer.from(txid,'hex'))
         sign.end();
-        var tempPrivate=crypto.createPrivateKey({
+        var tempPrivate=createPrivateKey({
           key:privateKey,
           format:'der',
           type: 'pkcs8'

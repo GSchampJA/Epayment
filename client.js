@@ -43,8 +43,10 @@ app.get("/getBlockBlockchain/:blockIndex",(req, res)=>{
 
 //get request from req of address,amount and fee
 app.post('/createTx',function(req,res){
-    var newTx=blockchainObj.createTransaction(address,amount,fee=0.00001)
+    var newTx=blockchainObj.createTransaction(req.body.address,req.body.amount,req.body.fee=0.00001)
+
     networkObj.boardcast('/verifyTx','post',JSON.stringify(newTx),'JSON')
+    res.send('')
 })
 
 app.post('/verifyTx',function(req,res){
@@ -72,8 +74,8 @@ app.post('/wallet/Create',function(req,res){
     //const walletAddress = walletInstance.walletAddress;
     // walletname = newwallet.wallet[0].walletname
     // walletaddr = wallet.wallet(walletname)
-    var publicKeyHash,privateKey,publicKey
-    [publicKeyHash,privateKey,publicKey]=wallet.wallet.createNewAddress()
+    var publicKeyHash,privateKey
+    [publicKeyHash,privateKey]=wallet.wallet.createNewAddress()
 
     res.send('Wallet address: ' + JSON.stringify(walletAddress));
 })
@@ -100,7 +102,7 @@ app.get('/testing',function(req,res){
     var blockchain=require('./blockchain')
     obj=new blockchain.BlockChain();
     var coinBaseTx=obj.createCoinbaseTx([],'1qwFqhokiTASXVSTqQyNAuit6qfbMpx');
-    console.log(coinBaseTx.txid) //check if create tx input address is the same as the coinbase one
+    console.log(coinBaseTx) //check if create tx input address is the same as the coinbase one
     if(obj.isTransactionValid(coinBaseTx)){
         var blockheaderObj= new BlockHeader('1',null,'1701107223');
         var blockObj=new Block(2,blockheaderObj,[coinBaseTx]);

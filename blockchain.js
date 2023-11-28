@@ -2,6 +2,7 @@ const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
 const moment=require('moment');
 const minTxns=require("./utility/algorithm")
 const {wallet}=require('./wallet')
+const { createHash } = require('crypto');
 const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 
 
@@ -71,7 +72,6 @@ class BlockChain{
                 }
             }
         }
-
         return map
     }
     //tempTxInfo[0]=blockIndex,tempTxInfo[1]=txid,tempTxInfo[2]=vout Index=>my unspent address
@@ -129,7 +129,7 @@ class BlockChain{
                 return false
             }
             if(publicKeyHashfunc(Buffer.from(tx.txid))==publicKeyHash){
-                const verify=crypto.createVerify('SHA256')
+                const verify=createVerify('SHA256')
                 verify.update(Buffer.from(publicKeyHash))
                 verify.end()
                 if(!verify.verify(Buffer.from(publicKey),signature)){
@@ -142,7 +142,7 @@ class BlockChain{
     }
 
     isTxHashValid(tx){
-        const hash=crypto.createHash('sha256')
+        const hash=createHash('sha256')
         var tmepHash = hash.copy()
         for (var txin of tx.txin){
             hash.update(Buffer.from(JSON.stringify(txin)))
