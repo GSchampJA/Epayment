@@ -10,6 +10,7 @@ const { p2pNetwork } = require('./network');
 const { post } = require('superagent');
 const moment=require('moment');
 const { Worker } = require("worker_threads");
+const cors = require('cors');
 
 app=express()
 function getMiningAddress(){
@@ -21,6 +22,7 @@ function getMiningAddress(){
     }
 }
 
+app.use(cors());
 const blockchainObj=new blockchain.BlockChain()
 //give an array of addresses
 const networkObj=new p2pNetwork()
@@ -141,6 +143,8 @@ app.get("/mining/:address",async (req,res)=>{
             }
             console.log( blockchainObj.txPool.printList())
             console.log(data)
+            //psuh to blockchain 
+            //save this mined block to database
             //networkObj.miningRequest(getMiningAddress())
             networkObj.miningRequest('1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
         }else{
