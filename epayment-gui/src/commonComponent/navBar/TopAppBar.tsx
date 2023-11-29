@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { UserInfoContext } from '../UserInfoContext';
 import { styled } from '@mui/material/styles';
 import { AppUrl } from '../objectType/AppUrl';
@@ -13,6 +13,9 @@ import Typography from '@mui/material/Typography';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { sendApi_stopMining } from '../api/CommonApi';
+import { toast } from 'react-toastify';
+import { Button } from '@mui/material';
 
 
 
@@ -41,6 +44,7 @@ const AppBar = styled(MuiAppBar, {shouldForwardProp: (prop) => prop !== 'open',}
 export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
 
   const { open, toggleDrawer } = props;
+  const [ isStopMining, setIsStopMining] = useState(true);
 
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useContext(UserInfoContext);
@@ -51,6 +55,21 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
       address: undefined,
       privatekey: undefined,
     })
+
+    navigate(AppUrl.Home)
+  }
+
+  const triggerMine = () => {
+    if (isStopMining) {
+
+      
+      sendApi_stopMining({isMining: !isStopMining}).catch((er) => {
+        console.log(er); 
+        toast.error(`Server error 500: ${er}`)
+      })
+
+      setIsStopMining(!isStopMining)
+    }
   }
 
   return (
@@ -77,6 +96,12 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
           sx={{ flexGrow: 1 }}
         ><Link className='HomepageLink' to={AppUrl.Home}> E-Payment </Link>
         </Typography>
+
+        <IconButton color="inherit" onClick={triggerMine}>
+          <Button style={{backgroundColor: "cornflowerblue"}} variant='contained'>
+            {isStopMining ? "Stopped Mining" : "Mining"}
+          </Button>
+        </IconButton>
         
         <IconButton color="inherit">
           <Badge badgeContent={4} color="secondary">
