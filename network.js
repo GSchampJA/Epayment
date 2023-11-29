@@ -6,10 +6,9 @@ class p2pNetwork{
     constructor(IPaddress){
         this.connectedPeers=IPaddress
     }
-    async miningRequest(address){
-        if(address==false)return false
+    async miningRequest(){
         try{
-            let result= await superagent.get(`127.0.0.1:8333/mining/${address}`)
+            let result= await superagent.get(`127.0.0.1:8333/mining`)
             //return result
         }catch{
             console.log('Connection Failed')
