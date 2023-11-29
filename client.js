@@ -55,6 +55,15 @@ app.get("/getBlockBlockchain/:blockIndex",(req, res)=>{
     // return block info
 })
 
+app.post("/getMyaddressUTx",(req, res)=>{
+    try {
+        const map = blockchainObj.scanUnspentTx(new Map([[req.body.address,'1']]))
+        return res.json({map})
+    } catch {
+        return res.status(500).json({ error: 'Unexpected Error' });
+    }
+})
+
 //get request from req of address,amount and fee
 app.post('/createTx',function(req,res){
     var newTx=blockchainObj.createTransaction(req.body.address,req.body.amount,req.body.fee=0.00001)
