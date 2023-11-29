@@ -60,7 +60,7 @@ app.post('/createTx',function(req,res){
     var newTx=blockchainObj.createTransaction(req.body.address,req.body.amount,req.body.fee=0.00001)
 
     networkObj.boardcast('/verifyTx','post',JSON.stringify(newTx),'JSON')
-    res.send('')
+    res.json(newTx)
 })
 
 app.post('/verifyTx',function(req,res){
@@ -169,7 +169,7 @@ app.get("/wallet/unspentTx", function (req, res) {
     //provide wallet information
     var map=new Map()
     map=blockchainObj.scanUnspentTx(wallet.wallet.walletAddress)
-    res.send(map)
+    res.json(map)
 });
 
 app.get("/utxo", function (req, res) {
