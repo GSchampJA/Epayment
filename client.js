@@ -83,8 +83,18 @@ app.post('/wallet/Create',function(req,res){
     res.send('Wallet address: ' + JSON.stringify(walletAddress));
 })
 
-app.get("/mining/:address",function(req,res){
-    const worker = new Worker("./worker.js");
+
+app.post("/stopMining",(req,res)=>{
+    blockchain.BlockChain.stopMining=req.body.isMining
+    //stop mining proccess, true => stop mining ,false => mine
+})  
+
+app.post("/verifyBlock",(req,res)=>{
+    blockchainObj.isBlockValid(req.body.block)
+    networkObj.boardcast("/verifyBlock",'post',req.ip,{"block":req.body.block})
+})
+
+app.get("/mining/:address",async (req,res)=>{
     if(blockchainObj.txPool.length!=0){
     var txns=[...blockchainObj.txPool]
     }else var txns=[]
@@ -92,15 +102,23 @@ app.get("/mining/:address",function(req,res){
     var newBlockHeader=new block.BlockHeader(blockchainObj.getLatestBlock().currentBlockHash,moment().unix().toString())
     var coinbaseTx=blockchainObj.createCoinbaseTx(txns,req.params.address)
     var newBlock=new block.Block(blockchain.BlockChain.length+1,newBlockHeader,[coinbaseTx,...txns])
-    newBlock=blockchainObj.mineBlock(newBlock)
-    blockchainObj.blockchain.push(newBlock)
-    console.log(newBlock)
+    const worker = new Worker("./mining.js", {
+        workerData: { block: newBlock },
+    });
+    worker.on("message", (data) => {
+
+    });
+    worker.on("error", (msg) => {
+        reject(`An error ocurred: ${msg}`);
+    });
+    //newBlock= await createWorker(newBlock)
 })
 
 app.get("/wallet/unspentTx", function (req, res) {
     //provide wallet information
     var map=new Map()
     map=blockchainObj.scanUnspentTx(wallet.wallet.walletAddress)
+    res.send(map)
 });
 
 app.get("/utxo", function (req, res) {

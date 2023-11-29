@@ -1,3 +1,4 @@
+import {List, Item} from 'linked-list'
 const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
 const moment=require('moment');
 const minTxns=require("./utility/algorithm")
@@ -8,6 +9,7 @@ const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 
 const coinbaseReward=0.00001
 class BlockChain{
+    static stopMining=false
     static length=1
 
     constructor(){
@@ -27,20 +29,35 @@ class BlockChain{
     }
 
 
-    mineBlock(block) {
-        let hash = doubleHashLoop(block.blockHeader)
-        while (hash.substring(0, 4) !== '0'.repeat(block.blockHeader.difficulty)) {
-            if(this.length==block.blockIndex){
-                return(0)
-            }
-            block.blockHeader.nonce+=1
-            hash = doubleHashLoop(block.blockHeader)
-            console.log(hash)
-            console.log(block.blockHeader.nonce)
-        }
-        block.currentBlockHash=hash
-        return(block)
+    // mineBlock(block) {
+    //     let hash = doubleHashLoop(block.blockHeader)
+    //     while (hash.substring(0, 4) !== '0'.repeat(block.blockHeader.difficulty)) {
+    //         if(this.length==block.blockIndex){
+    //             return(0)
+    //         }
+    //         block.blockHeader.nonce+=1
+    //         hash = doubleHashLoop(block.blockHeader)
+    //         console.log(hash)
+    //         console.log(block.blockHeader.nonce)
+    //     }
+    //     block.currentBlockHash=hash
+    //     return(block)
         
+    // }
+    //parameter is a block class object
+    isBlockValid(block){
+        var hash=doubleHashLoop(block.BlockHeader)
+        if(hash==block.currentBlockHash && block.blockHeader.previousBlockHeader==this.getLatestBlock.currentBlockHash){
+            var totalTxFee=0
+            for(e of block.txns){
+                totalTxFee+=e.fee
+            }
+            if (totalTxFee+coinbaseReward==block.txns[0].amount){
+                return true
+            }
+
+        }
+        return false
     }
 
     isChainValid() {

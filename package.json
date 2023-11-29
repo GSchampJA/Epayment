@@ -6,6 +6,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "http": "^0.0.1-security",
+    "linked-list": "^3.1.0",
     "moment": "^2.29.4",
     "mongoose": "^8.0.1",
     "superagent": "^8.1.2"
