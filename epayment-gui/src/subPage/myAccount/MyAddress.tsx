@@ -103,11 +103,22 @@ const  MyAddressPage = () => {
                 <Row>
                     <Col md={4} className='mt-1'>{"My current address(s)"}</Col>
                     <Col></Col>
-                    <Col md={4}><Button variant="contained" 
-                        onClick={openDialog}>Create New Address</Button>
+                    <Col md={4}>
+                        {/* <Button variant="contained" onClick={openDialog}>Create New Address</Button> */}
                     </Col>
                 </Row>
                 <hr></hr>
+
+                {/* <Row className='mt-5'> */}
+                    <Row className="mt-5">
+                        <Col md={3}>Address:</Col>
+                        <Col><CopyToClipboardButton copyText={userInfo.address??`Error`} /></Col>
+                    </Row>
+                    <Row className="mt-3">
+                        <Col md={3}>Private Key:</Col>
+                        <Col><CopyToClipboardButton copyText={userInfo.privatekey??`Error`} /></Col>
+                    </Row>
+                {/* </Row> */}
             </Card>
         
         </Container>

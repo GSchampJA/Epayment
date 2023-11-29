@@ -16,7 +16,8 @@ import NotFoundPage from './subPage/otherPage/NotFoundPage';
 import MyAddressPage from './subPage/myAccount/MyAddress';
 import MyUtxosPage from './subPage/myAccount/MyUtxosPage';
 import MyTxPage from './subPage/myAccount/MyTransaction';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const API_URL = process.env.REACT_APP_API_URL;
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <UserInfoProvider>
+        <ToastContainer />
         <CssBaseline />
         
         {/* Top bar of the page */}

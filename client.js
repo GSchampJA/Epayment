@@ -55,12 +55,21 @@ app.get("/getBlockBlockchain/:blockIndex",(req, res)=>{
     // return block info
 })
 
+app.post("/getMyaddressUTx",(req, res)=>{
+    try {
+        const map = blockchainObj.scanUnspentTx(new Map([[req.body.address,'1']]))
+        return res.json({map})
+    } catch {
+        return res.status(500).json({ error: 'Unexpected Error' });
+    }
+})
+
 //get request from req of address,amount and fee
 app.post('/createTx',function(req,res){
     var newTx=blockchainObj.createTransaction(req.body.address,req.body.amount,req.body.fee=0.00001)
 
     networkObj.boardcast('/verifyTx','post',JSON.stringify(newTx),'JSON')
-    res.send('')
+    res.json(newTx)
 })
 
 app.post('/verifyTx',function(req,res){
@@ -91,15 +100,21 @@ app.post('/wallet/valid_existing',function(req,res){
     const address = req.body.address; // publicKeyHash
     const prK = req.body.privateKey
 
-    if (!wallet.checkExistingAddress(prK)) {
-        return res.status(500).json({ error: 'Address is not exist' });
+    try {
+        if (!wallet.checkExistingAddress(prK)) {
+            return res.status(500).json({ error: 'Address is not exist' });
+        }
+    
+        if (!wallet.checkValidKeypair(address, prK)) {
+            return res.status(500).json({ error: 'Unmatch address and privateKey' });
+        }
+    
+        res.json({login: true})
+    } catch {
+        return res.status(500).json({ error: 'Wrong Address or private key' });
     }
 
-    if (!wallet.checkValidKeypair(address, prK)) {
-        return res.status(500).json({ error: 'Unmatch address and privateKey' });
-    }
-
-    res.json({login: true})
+    
 })
 
 
@@ -172,7 +187,7 @@ app.get("/wallet/unspentTx", function (req, res) {
     //provide wallet information
     var map=new Map()
     map=blockchainObj.scanUnspentTx(wallet.wallet.walletAddress)
-    res.send(map)
+    res.json(map)
 });
 
 app.get("/utxo", function (req, res) {

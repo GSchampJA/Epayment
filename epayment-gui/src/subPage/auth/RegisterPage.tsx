@@ -107,18 +107,6 @@ const RegisterPage = () => {
     }
   });
 
-  const sendApiRequest = async () => {
-    try {
-      const response = await fetch('/api/endpoint'); // Replace with your API endpoint
-      const data = await response.json();
-      // Process the 'data' received from the API
-      console.log(data);
-    } catch (error) {
-      // Handle any errors that occurred during the API request
-      console.error(error);
-    }
-  };
-
   const createAccount = () => {
     sendApi_walletCreate().then(res => {
       console.log('response: ')
