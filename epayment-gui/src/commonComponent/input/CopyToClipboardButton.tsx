@@ -17,7 +17,7 @@ const CopyToClipboardButton = (props: CTCBProps) => {
     
     return (
         <>
-          <Button className='bgColor-grey' onClick={handleClick}>{copyText}</Button>
+          <Button className='bgColor-grey' onClick={handleClick}>{copyText.length > 40 ? copyText.slice(0, 35) + `...` : copyText}</Button>
           <Snackbar
             open={open}
             onClose={() => setOpen(false)}
