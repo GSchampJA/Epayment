@@ -47,7 +47,7 @@ class wallet {
           }
           return([publicKeyHash.toString('hex'),privateKey.toString('hex')])
     }
-    //generating public key from private key
+    //generating (1) public key, (2) address from private key
     static importPrivateKey(privateKey){
       privateKey=Buffer.from(privateKey,'hex')
         var tempKey=createPublicKey({
@@ -65,9 +65,39 @@ class wallet {
             this.walletAddress.set(publicKeyHash,[privateKey.toString('hex'),tempPublicKey.toString('hex')])
           }else{
             console.log("Key is imported already.")
+            return false
           }
-          return(tempPublicKey)
+        return([publicKeyHash.toString('hex'), tempPublicKey.toString('hex')]) // (tempPublicKey)
     }
+
+    static checkExistingAddress(privateKey) {
+      privateKey = Buffer.from(privateKey,'hex')
+      var tempKey = createPublicKey({ key: privateKey, format: 'der', type:'pkcs8' })
+      var tempPublicKey = tempKey.export({ format: 'der', type: 'spki', })
+      var publicKeyHash = publicKeyHashfunc(tempPublicKey)
+
+      if (this.walletAddress.has(publicKeyHash)) {
+        return true
+      } else {
+        return false
+      }
+    }
+
+    // check is the publicKeyHash and privateKey is keypair
+    static checkValidKeypair(address, privateKey) {
+      privateKey = Buffer.from(privateKey,'hex')
+      var tempKey = createPublicKey({ key: privateKey, format: 'der', type:'pkcs8' })
+      var tempPublicKey = tempKey.export({ format: 'der', type: 'spki', })
+      var publicKeyHash = publicKeyHashfunc(tempPublicKey)
+
+      if (this.walletAddress.has(publicKeyHash) && publicKeyHash === address) {
+        return true
+      } else {
+        return false
+      }
+    }
+
+
       //txin=unlockScript=> signature, lockSript= txin.utxo.txout.lockScript=>public key hash
     static signTransaction(txin,lockScript,txid){
 
