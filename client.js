@@ -119,17 +119,17 @@ app.post("/verifyBlock",(req,res)=>{
         for(tx of block.txns){
             blockchainObj.txPool.removeElement(tx)
         }
-        networkObj.miningRequest(getMiningAddress())
+        networkObj.miningRequest()
     }
 
 })
 
-app.get("/mining/:address",async (req,res)=>{
+app.get("/mining",async (req,res)=>{
     if(blockchainObj.txPool.size_of_list()!=0){
     var txns=blockchainObj.txPool.toArray()
     }else var txns=[]
     var newBlockHeader=new block.BlockHeader(blockchainObj.getLatestBlock().currentBlockHash,moment().unix().toString())
-    var coinbaseTx=blockchainObj.createCoinbaseTx(txns,req.params.address)
+    var coinbaseTx=blockchainObj.createCoinbaseTx(txns,'1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
     var newBlock=new block.Block(blockchain.BlockChain.length+1,newBlockHeader,[coinbaseTx,...txns])
     const worker = new Worker("./mining.js", {
         workerData: { block: newBlock },
@@ -141,12 +141,14 @@ app.get("/mining/:address",async (req,res)=>{
                     blockchainObj.txPool.removeElement(tx)
                 }
             }
-            console.log( blockchainObj.txPool.printList())
+            blockchain.BlockChain.length++
             console.log(data)
+            console.log(blockchain.BlockChain.length)
+            blockchainObj.blockchain.push(data)
             //psuh to blockchain 
             //save this mined block to database
             //networkObj.miningRequest(getMiningAddress())
-            networkObj.miningRequest('1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
+            networkObj.miningRequest()
         }else{
             console.log("Block Mined by others")
         }
