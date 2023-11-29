@@ -1,5 +1,5 @@
 import { Card, Col, Container, Row } from 'react-bootstrap'
-import { Button } from '@mui/material'
+import { Button, TextField } from '@mui/material'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -8,6 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CopyToClipboardButton from '../../commonComponent/input/CopyToClipboardButton';
 import { useContext, useReducer, useState } from 'react';
 import { UserInfoContext } from '../../commonComponent/UserInfoContext';
+import { sendApi_createTx } from './MyAccountApi';
 
 enum pageMode {
     DEFAULT = 'default',
@@ -18,11 +19,18 @@ interface MyTx_state {
     pageMode: pageMode,
     allTx?: string[],
     isDigOpen: boolean,
-    tx_input?: {
+    tx_input: {
         toAdress?: string,
         amount?: number,
         fee?: number,
-
+    },
+    tx_inputError: {
+        toAdress: boolean,
+        amount: boolean,
+        fee: boolean,
+        toAdress_errorText?: string,
+        amount_errorText?: string,
+        fee_errorText?: string,
     }
 }
 
@@ -30,28 +38,57 @@ enum ActionType {
     UPDATE_TX_INPUT,
     RECEIVE_API,
     UPDATE_DIGOPEN,
+    UPDATE_TX_INPUT_ERROR,
+    CLOSE_DIAG,
 }
   
 type Action = {
     type: ActionType.UPDATE_TX_INPUT;
-    // target: keyof MyTx_state['accountInput'];
-    value: string; 
+    target: keyof MyTx_state['tx_input'];
+    value: string | number; 
 } | {
     type: ActionType.RECEIVE_API;
 } | {
     type: ActionType.UPDATE_DIGOPEN;
     isDigOpen: boolean
+} | {
+    type: ActionType.UPDATE_TX_INPUT_ERROR;
+    target: keyof MyTx_state['tx_inputError'];
+    value: boolean | string
+} | {
+    type: ActionType.CLOSE_DIAG;
 }
   
   const reducer = (state: MyTx_state, action: Action) => {
     switch (action.type) {
 
         case ActionType.UPDATE_TX_INPUT:
-            return state;
+            return {...state, tx_input: {
+                ...state.tx_input,
+                [action.target]: action.value
+            }};
 
         case ActionType.UPDATE_DIGOPEN:
-        
             return {...state, isDigOpen: action.isDigOpen};
+
+        case ActionType.CLOSE_DIAG:
+            return {
+                ...state,
+                isDigOpen: false,
+                tx_input: {
+                    toAdress: undefined,
+                    amount: undefined,
+                    fee: undefined,
+                },
+                tx_inputError: {
+                    toAdress: false,
+                    amount: false,
+                    fee: false,
+                    toAdress_errorText: undefined,
+                    amount_errorText: undefined,
+                    fee_errorText: undefined,
+                }
+            }
         default:
             return state;
     }
@@ -64,10 +101,52 @@ const  MyTxPage = () => {
     const [state, dispatch] = useReducer(reducer, {
         pageMode: pageMode.DEFAULT,
         isDigOpen: false,
+        tx_input: {},
+        tx_inputError: {
+            toAdress: false,
+            amount: false,
+            fee: false,
+        }
     });
 
     const controlDiag = (isDigOpen: boolean) => {
+        dispatch({ type: ActionType.UPDATE_DIGOPEN, isDigOpen: isDigOpen})
+    }
 
+    const makeTx = () => {
+        if (state.tx_input.amount && state.tx_input.toAdress?.trim() && state.tx_input.fee) {
+
+            dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'toAdress', value: false})
+            dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'amount', value: false})
+            dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'fee', value: false})
+            // send request
+            sendApi_createTx({
+                address: state.tx_input.toAdress?.trim(), 
+                amount: state.tx_input.amount,
+                fee: state.tx_input.fee
+            }).then(res => {
+                console.log('response - sendApi_createTx:')
+                console.log(res)
+            }).catch((er) => {
+                console.log(er)
+            })
+
+            dispatch({ type: ActionType.CLOSE_DIAG})
+
+
+        }
+        
+        if (!state.tx_input.toAdress?.trim()) {
+            dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'toAdress', value: true})
+        } else dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'toAdress', value: false})
+        
+        if (!state.tx_input.amount) {
+            dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'amount', value: true})
+        } else dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'amount', value: false})
+        
+        if (!state.tx_input.fee) {
+            dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'fee', value: true})
+        } else dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'fee', value: false})
     }
 
 
@@ -78,19 +157,73 @@ const  MyTxPage = () => {
 
             <Dialog
                 open={state.isDigOpen}
-                onClose={() => controlDiag(false)}
+                // onClose={() => controlDiag(false)}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">{"Make new Transaction"}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{"Make new Transaction"}<hr></hr></DialogTitle>
+
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        If you want to create a new address for this wallet, click 'Confirm'.
+                        If you want to create a new transaction, click 'Confirm'.
                     </DialogContentText>
+                    <Row className="mt-3">
+                        <Col md={2}></Col>
+                        <Col>
+                            <TextField
+                                error={state.tx_inputError.toAdress}
+                                label="To Address"
+                                value={state.tx_input.toAdress}
+                                onChange={(ref) => dispatch({ type: ActionType.UPDATE_TX_INPUT, target:'toAdress', value: ref.target.value})}
+                            />
+                        </Col>
+                    </Row>
+                    <Row className="mt-3">
+                        <Col md={2}></Col>
+                        <Col>
+                            <TextField
+                                error={state.tx_inputError.amount}
+                                type='number'
+                                label="Amount"
+                                value={state.tx_input.amount}
+                                helperText={"minimum amount is 0.00001"}
+                                onChange={(ref) => {
+                                    var input_amount = Number(ref.target.value);
+                                    var toamount = 0.00001
+                                    if (input_amount > 0.00001) {
+                                        toamount = input_amount
+                                    }
+
+                                    dispatch({ type: ActionType.UPDATE_TX_INPUT, target:'amount', value: toamount})}
+                                }
+                            />
+                        </Col>
+                    </Row>
+                    <Row className="mt-3">
+                        <Col md={2}></Col>
+                        <Col>
+                            <TextField
+                                error={state.tx_inputError.fee}
+                                label="Fee"
+                                type='number'
+                                value={state.tx_input.fee}
+                                helperText={"minimum fee is 0.00001"}
+                                onChange={(ref) => {
+                                    var input_fee = Number(ref.target.value);
+                                    var tofee = 0.00001
+                                    if (input_fee > 0.00001) {
+                                        tofee = input_fee
+                                    }
+
+                                    dispatch({ type: ActionType.UPDATE_TX_INPUT, target:'fee', value: tofee})}
+                                }
+                            />
+                        </Col>
+                    </Row>
                 </DialogContent>
-                <DialogActions>
-                    {/* {!!!state.newAddress ? <Button onClick={closeDialog}>Not now</Button> : <></>} */}
-                    <Button autoFocus>Confirm</Button>
+                <DialogActions className='mt-3'>
+                    <Button onClick={() => controlDiag(false)}>Cancel</Button>
+                    <Button onClick={() => makeTx()} autoFocus>Confirm</Button>
                 </DialogActions>
             </Dialog>
 
