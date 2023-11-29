@@ -76,6 +76,8 @@ class Block{
         this.txns=txns
         this.blockHeader.merkleRoot=this.createMerkleRoot(this.txns)
         this.currentBlockHash=this.hashBlockHeader()
+
+
     }
     hashBlockHeader(){
         return doubleHashLoop(this.blockHeader)

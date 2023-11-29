@@ -5,10 +5,10 @@ const { doubleHashLoop}= require('./utility/hashUtility')
     var index=workerData.block.blockIndex
     let hash = doubleHashLoop(workerData.block.blockHeader)
     while (hash.slice(0, target) != '0'.repeat(target)) {
-        if(blockchain.BlockChain.length==index){
+        if(workerData.length==index){
             parentPort.postMessage(false);
         }
-        if(blockchain.BlockChain.stopMining==true){
+        if(workerData.stopFlag==true){
             throw new Error(console.error('Mining stopped'))
         }
         workerData.block.blockHeader.nonce+=1

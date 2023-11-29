@@ -2,7 +2,7 @@ const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
 const moment=require('moment');
 const minTxns=require("./utility/algorithm")
 const {wallet}=require('./wallet')
-const { createHash } = require('crypto');
+const { createHash, KeyObject } = require('crypto');
 const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 const {LinkedList}=require('./utility/linkList')
 
@@ -15,6 +15,21 @@ class BlockChain{
     constructor(){
         this.txPool=new LinkedList()
         this.blockchain=[this.#getGenesisBlock()]
+
+
+        //testing
+        wallet.importPrivateKey("308184020100301006072a8648ce3d020106052b8104000a046d306b020101042047eba4323fe49eb1e4ff406207f484bd56b00af180da380d4cfe2c7ae8550dfda14403420004afbe7934ab7ce1c7ebf01b56c675a05a86a5d0eb4764b0414eabb118ccee990d16003eb55e095a3ec631181ced898aba2162ab8a2a79e2d08b11ebf7bfc6525c");
+        wallet.importPrivateKey("308184020100301006072a8648ce3d020106052b8104000a046d306b020101042048c7d7391eb2809703fc3c1e7b3a4e1dc92a130bfbc6182e0849cd19b8d783c3a14403420004fc977c70de2066e2d8e27ac1e5a61d2194059a3bbc5c66bda637227c29b3fe39b80696965e0dbcf1d1ba073cda002e7f5384bba083fb060210cc7b0507ac519f");
+        var coinBaseTx=this.createCoinbaseTx([],'1qwFqhokiTASXVSTqQyNAuit6qfbMpx');
+        var blockheaderObj= new BlockHeader('1',null,'1701107223');
+        var blockObj=new Block(2,blockheaderObj,[coinBaseTx]);
+        this.blockchain.push(blockObj);
+        this.length+=1
+        var coinBaseTx=this.createCoinbaseTx([this.createTransaction("1UK87hKPfkepZNgjE8bLaqrUj2o8dG5",0.000005,0.000005)],'1qwFqhokiTASXVSTqQyNAuit6qfbMpx');
+        var blockheaderObj= new BlockHeader('1',null,'1701107223');
+        var blockObj=new Block(3,blockheaderObj,[coinBaseTx,this.createTransaction("1UK87hKPfkepZNgjE8bLaqrUj2o8dG5",0.000005,0.000005)]);
+        this.blockchain.push(blockObj);
+        this.length+=1
     }
     #getGenesisBlock(){
         let blockHeader=new BlockHeader("0x0",moment().unix())
@@ -37,6 +52,7 @@ class BlockChain{
     //         }
     //         block.blockHeader.nonce+=1
     //         hash = doubleHashLoop(block.blockHeader)
+
     //         console.log(hash)
     //         console.log(block.blockHeader.nonce)
     //     }
@@ -86,12 +102,17 @@ class BlockChain{
             for(var tx of block.txns){
                 for(var txin of tx.txin){
                     if (txin!='coinbase' && addresses.has(txin.fromAddress)){
-                        map.delete(txin.utxo+txin.index.toString())
+                        map.forEach((value,key)=>{
+                            if(key.split(':')[1]==txin.utxo){
+                                map.delete(key)
+                            }
+                        })
                     }
                 }
                 for(var i =0; i<tx.txoutputCount;i++){
                     if (addresses.has(tx.txout[i].toAddress)){
-                        map.set(block.blockIndex.toString()+':'+tx.txid+':'+i.toString(),tx.txout[i].amount)
+                        map.set(block.blockIndex.toString()+':'+tx.txid+':'+i.toString()+':'+tx.txout[i].toAddress.toString(),tx.txout[i].amount)
+                        //1=>
                     }
                 }
             }
@@ -206,7 +227,7 @@ class BlockChain{
     //blcok => the minning block, address=> address that miner want the reward to 
     createCoinbaseTx(txns,address){
         var totalTxFee=0
-        for(e of txns){
+        for(var e of txns){
             totalTxFee+=e.fee
         }
         var txOut=new txout(address,totalTxFee+coinbaseReward,address)

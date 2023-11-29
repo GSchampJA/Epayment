@@ -55,14 +55,6 @@ app.get("/getBlockBlockchain/:blockIndex",(req, res)=>{
     // return block info
 })
 
-app.post("/getMyaddressUTx",(req, res)=>{
-    try {
-        const map = blockchainObj.scanUnspentTx(new Map([[req.body.address,'1']]))
-        return res.json({map})
-    } catch {
-        return res.status(500).json({ error: 'Unexpected Error' });
-    }
-})
 
 //get request from req of address,amount and fee
 app.post('/createTx',function(req,res){
@@ -119,15 +111,14 @@ app.post('/wallet/valid_existing',function(req,res){
 
 
 app.get("/stopMining",(req,res)=>{
-    if(req.body.isMining==false){
-        networkObj.miningRequest(getMiningAddress)
-    }
     if(blockchain.BlockChain.stopMining==true){
         blockchain.BlockChain.stopMining=false
-    }
-    if(blockchain.BlockChain.stopMining==false){
+        networkObj.miningRequest()
+    }else{
         blockchain.BlockChain.stopMining=true
     }
+
+    console.log(blockchain.BlockChain.stopMining)
     res.send('Mining Stopped or start')
     //stop mining proccess, true => stop mining ,false => mine
 })  
@@ -150,10 +141,12 @@ app.get("/mining",async (req,res)=>{
     var txns=blockchainObj.txPool.toArray()
     }else var txns=[]
     var newBlockHeader=new block.BlockHeader(blockchainObj.getLatestBlock().currentBlockHash,moment().unix().toString())
+    newBlockHeader.difficulty=5
     var coinbaseTx=blockchainObj.createCoinbaseTx(txns,'1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
     var newBlock=new block.Block(blockchain.BlockChain.length+1,newBlockHeader,[coinbaseTx,...txns])
+    
     const worker = new Worker("./mining.js", {
-        workerData: { block: newBlock },
+        workerData: { block: newBlock , length:blockchain.BlockChain.length, stopFlag:blockchain.BlockChain.stopMining},
     });
     worker.on("message", (data) => {
         if(data!=false ){
@@ -178,6 +171,7 @@ app.get("/mining",async (req,res)=>{
     });
     worker.on("error", (msg) => {
         console.log(`An error ocurred: ${msg}`);
+        console.log('hehehe')
         res.send("Mining stopped")
     });
     //newBlock= await createWorker(newBlock)
@@ -187,7 +181,11 @@ app.get("/wallet/unspentTx", function (req, res) {
     //provide wallet information
     var map=new Map()
     map=blockchainObj.scanUnspentTx(wallet.wallet.walletAddress)
-    res.json(map)
+    console.log(wallet.wallet.walletAddress)
+    console.log(blockchainObj.blockchain[2].txns)
+    debugger
+    console.log(map)
+    res.json({map})
 });
 
 app.get("/utxo", function (req, res) {
@@ -198,6 +196,7 @@ app.get("/utxo", function (req, res) {
 //for testing only
 //create keypairs first
 app.get('/testing',function(req,res){
+    debugger
     const {wallet}=require('./wallet');
     const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
     wallet.importPrivateKey("308184020100301006072a8648ce3d020106052b8104000a046d306b020101042047eba4323fe49eb1e4ff406207f484bd56b00af180da380d4cfe2c7ae8550dfda14403420004afbe7934ab7ce1c7ebf01b56c675a05a86a5d0eb4764b0414eabb118ccee990d16003eb55e095a3ec631181ced898aba2162ab8a2a79e2d08b11ebf7bfc6525c");
