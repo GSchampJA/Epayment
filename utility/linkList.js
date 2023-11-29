@@ -81,6 +81,15 @@ class LinkedList {
         }
         console.log(str);
     }
+    toArray(){
+        var list=[]
+        var curr = this.head;
+        while (curr) {
+            list.push(curr.element);
+            curr = curr.next;
+        }
+        return(list)
+    }
 }
 
 module.exports= {Node,LinkedList}

@@ -4,6 +4,7 @@ const minTxns=require("./utility/algorithm")
 const {wallet}=require('./wallet')
 const { createHash } = require('crypto');
 const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
+const {LinkedList}=require('./utility/linkList')
 
 
 const coinbaseReward=0.00001
@@ -12,7 +13,7 @@ class BlockChain{
     static length=1
 
     constructor(){
-        this.txPool=[]
+        this.txPool=new LinkedList()
         this.blockchain=[this.#getGenesisBlock()]
     }
     #getGenesisBlock(){
