@@ -61,43 +61,33 @@ app.post('/verifyTx',function(req,res){
     }
 })
 
-// create wallet - user account 
-//          --> return (private key: string) to f/e ; b/e keeps the username, private key and public keys(address)
+// create address - 
+//          --> return (private key: string) to f/e ; b/e keeps private key and public keys(address)
 app.post('/wallet/Create',function(req,res){
     const {wallet}=require('./wallet');
-    //calling wallet from wallet.js
-      // Creating a new wallet instance
-    //const walletInstance = new wallet();
-    
-    // Calling the createNewAddress function to generate a new address
-    //walletInstance.createNewAddress();
-    
-    // Retrieving the newly created address from the wallet instance
-    //const walletAddress = walletInstance.walletAddress;
-    // walletname = newwallet.wallet[0].walletname
-    // walletaddr = wallet.wallet(walletname)
+
     var publicKeyHash,privateKey
     [publicKeyHash,privateKey]= wallet.createNewAddress()
 
-    res.json({ publicKeyHash, privateKey });
+    return res.json({ publicKeyHash, privateKey });
 })
 
 // create address - input:  privateKey
 //          --> return (private key: string) to f/e ; b/e keeps the username, private key and public keys(address)
-app.post('/wallet/CreateAdress',function(req,res){
+app.post('/wallet/valid_existing',function(req,res){
     const {wallet}=require('./wallet');
+    const address = req.body.address; // publicKeyHash
     const prK = req.body.privateKey
-    // var publicKeyHash, privateKey
 
-    result = wallet.importPrivateKey(prK);
-    if (result === false) {
-        // const errorMessage
-        res.status(500).json({ error: 'Key is imported already.' });
-    } else {
-        const publicKeyHash = result[0]
-        const tempPublicKey = result[0]
-        res.json({ publicKeyHash, tempPublicKey });
+    if (!wallet.checkExistingAddress(prK)) {
+        return res.status(500).json({ error: 'Address is not exist' });
     }
+
+    if (!wallet.checkValidKeypair(address, prK)) {
+        return res.status(500).json({ error: 'Unmatch address and privateKey' });
+    }
+
+    res.json({login: true})
 })
 
 app.get("/mining/:address",function(req,res){
