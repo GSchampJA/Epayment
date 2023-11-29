@@ -68,8 +68,8 @@ export const SideNavBar = (props: {open: boolean, toggleDrawer: () => any}) => {
 
 
         {
-          true ?
-        // (userInfo.logIn) ? /** If login, pop my wallet information */
+          // true ?
+        (userInfo.logIn) ? /** If login, pop my wallet information */
           <> {secondaryListItems} </> : <></>
         }
       </List>
