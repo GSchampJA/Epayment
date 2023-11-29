@@ -14,7 +14,3 @@ export enum AppUrl {
     
 }
 
-export enum ApiPath {
-    
-}
-

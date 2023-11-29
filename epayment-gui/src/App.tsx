@@ -18,7 +18,7 @@ import MyUtxosPage from './subPage/myAccount/MyUtxosPage';
 import MyTxPage from './subPage/myAccount/MyTransaction';
 
 
-
+export const API_URL = process.env.REACT_APP_API_URL;
 const App = () => {
 
   const [open, setOpen] = React.useState(false);
