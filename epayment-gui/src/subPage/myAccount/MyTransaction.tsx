@@ -222,7 +222,7 @@ const  MyTxPage = () => {
                     </Row>
                 </DialogContent>
                 <DialogActions className='mt-3'>
-                    <Button onClick={() => controlDiag(false)}>Cancel</Button>
+                    <Button onClick={() => dispatch({ type: ActionType.CLOSE_DIAG})}>Cancel</Button>
                     <Button onClick={() => makeTx()} autoFocus>Confirm</Button>
                 </DialogActions>
             </Dialog>
