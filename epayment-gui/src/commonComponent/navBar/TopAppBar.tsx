@@ -43,7 +43,15 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
   const { open, toggleDrawer } = props;
 
   const navigate = useNavigate();
-  const [userInfo] = useContext(UserInfoContext);
+  const [userInfo, setUserInfo] = useContext(UserInfoContext);
+
+  const logOut = () => {
+    setUserInfo({
+      logIn: false,
+      address: undefined,
+      privatekey: undefined,
+    })
+  }
 
   return (
     <AppBar position="absolute" open={open}>
@@ -77,7 +85,7 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
         </IconButton>
 
         {(userInfo.logIn) ? /** If login, pop Logout icon */
-          <IconButton color="inherit" onClick={() => {/**LogOut progress */}}>
+          <IconButton color="inherit" onClick={logOut}>
             <LogoutIcon/> &nbsp; <span className='TopNavFont'>{'LogOut'}</span>
           </IconButton>
            : /** If logout, pop Login icon */

@@ -91,15 +91,21 @@ app.post('/wallet/valid_existing',function(req,res){
     const address = req.body.address; // publicKeyHash
     const prK = req.body.privateKey
 
-    if (!wallet.checkExistingAddress(prK)) {
-        return res.status(500).json({ error: 'Address is not exist' });
+    try {
+        if (!wallet.checkExistingAddress(prK)) {
+            return res.status(500).json({ error: 'Address is not exist' });
+        }
+    
+        if (!wallet.checkValidKeypair(address, prK)) {
+            return res.status(500).json({ error: 'Unmatch address and privateKey' });
+        }
+    
+        res.json({login: true})
+    } catch {
+        return res.status(500).json({ error: 'Wrong Address or private key' });
     }
 
-    if (!wallet.checkValidKeypair(address, prK)) {
-        return res.status(500).json({ error: 'Unmatch address and privateKey' });
-    }
-
-    res.json({login: true})
+    
 })
 
 

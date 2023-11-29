@@ -6,11 +6,12 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import PasswordIcon from '@mui/icons-material/Password';
-import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppUrl } from "../../commonComponent/objectType/AppUrl";
 import { extract_FileName } from "../../commonComponent/input/StringHandle";
+import { toast } from "react-toastify";
+import { sendApi_wallet_validExisting, wallet_validExistingRequestBody } from "./AuthApi";
 
 
 interface LoginState {
@@ -54,10 +55,54 @@ const reducer = (state: LoginState, action: Action) => {
 
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useContext(UserInfoContext);
   const [state, dispatch] = useReducer(reducer, {
     accountInput: {}
   });
+
+
+  const logIn = () => {
+
+    if (state.accountInput.username?.trim() === undefined || state.accountInput.username?.trim() === '') {
+      toast.error("Please put your address!");
+      return
+    }
+    if (state.accountInput.password?.trim() === undefined || state.accountInput.password?.trim() === '') {
+      toast.error("Please put your private key!");
+      return
+    }
+
+    const requestBody: wallet_validExistingRequestBody = {
+      address: state.accountInput.username!.trim(),
+      privateKey: state.accountInput.password!.trim()
+    }
+
+    sendApi_wallet_validExisting(requestBody).then((res) => {
+      console.log('response: ')
+      console.log(res)
+      console.log(res.data)
+
+      if (res.data.login === true) {
+        // update to userInfo
+        setUserInfo({
+          logIn: true,
+          address: state.accountInput.username!.trim(),
+          privatekey: state.accountInput.password!.trim()
+        })
+
+        navigate(AppUrl.Home)
+      }
+
+      
+
+
+
+    }).catch((error) => { console.log(error.response.data.error); toast.error(`Server error 500: ${error.response.data.error}`)})
+
+
+    
+  }
 
 
 
@@ -102,7 +147,7 @@ const LoginPage = () => {
               <Col md={8}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                   <AccountCircle sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                  <TextField label="Username" variant="standard" value={state.accountInput.username}
+                  <TextField label="Address" variant="standard" value={state.accountInput.username}
                     onChange={(ref) => dispatch({ type: ActionType.UPDATE_ACCOUNT_INPUT, target: 'username', value: ref.target.value })} 
                   />
                 </Box>
@@ -114,7 +159,7 @@ const LoginPage = () => {
               <Col md={8}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                   <PasswordIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
-                  <TextField label="Password" variant="standard" value={state.accountInput.password}
+                  <TextField label="Private Key" variant="standard" value={state.accountInput.password}
                     onChange={(ref) => dispatch({ type: ActionType.UPDATE_ACCOUNT_INPUT, target: 'password', value: ref.target.value })} 
                   />
                 </Box>
@@ -122,7 +167,7 @@ const LoginPage = () => {
               <Col></Col>
             </Row>
             {/* upload file field */}
-            <Row className="mt-5">
+            {/* <Row className="mt-5">
               <Col md={2}></Col>
               <Col md={7} className="" style={{marginLeft: '2rem'}}>
                 <Button
@@ -142,14 +187,20 @@ const LoginPage = () => {
                 </Button>
               </Col>
               <Col></Col>
-            </Row>
-            <Row>
+            </Row> */}
+            {/* <Row>
               <Col md={3}></Col>
               <Col md={8} className="mt-1">{state.accountInput.filename}</Col>
               <Col></Col>
+            </Row> */}
+
+            <Row className="mt-3">
+              <Col md={3}></Col>
+              <Col md={8} className="mt-1"><Button variant={'outlined'} onClick={logIn}> Login </Button></Col>
+              <Col></Col>
             </Row>
 
-            <Row style={{marginTop: '5rem'}}>
+            <Row style={{marginTop: '2rem'}}>
               <Col></Col>
               <Col md={8}>New User ? <Link to={AppUrl.RegisterAC}>Register Here</Link></Col>
               <Col></Col>
