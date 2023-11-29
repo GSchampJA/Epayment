@@ -126,17 +126,6 @@ class Block{
         
     // }
 
-    mineBlock() {
-        let hash = doubleHashLoop(this.blockHeader)
-        while (hash.substring(0, 4) !== '0000') {
-            this.blockHeader.nonce+=1
-            hash = doubleHashLoop(this.blockHeader)
-            console.log(hash)
-            console.log(this.blockHeader.nonce)
-        }
-        return(this.blockHeader.nonce)
-        
-    }
 
     adjustDifficulty(lastBlock, newBlockTime) {
         let difficulty = lastBlock.BlockHeader.difficulty;

@@ -20,7 +20,7 @@ function publicKeyHashfunc(publicKey) {
     const hash=createHash('sha256')
     var postfix=hash.copy().update(result).digest()
     hash.update(postfix)
-    result += hash.digest('hex').substr(0,4)
+    result += hash.digest('hex').slice(0,4)
     result = Buffer.from(result.toString('hex'),'hex');
     return (base58.encode(result))
 }

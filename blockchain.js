@@ -7,11 +7,11 @@ const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 
 
 const coinbaseReward=0.00001
-
 class BlockChain{
-    constructor(){ 
+    static length=1
+
+    constructor(){
         this.txPool=[]
-        this.length=[]
         this.blockchain=[this.#getGenesisBlock()]
     }
     #getGenesisBlock(){
@@ -26,15 +26,21 @@ class BlockChain{
         return this.blockchain[this.blockchain.length - 1];
     }
 
-    addBlock(newBlock) {
-        newBlock.previousHash = this.getLatestBlock().currentBlockhash;//later see see
-        newBlock.mineBlock(this.getLatestBlock());
-        this.blockchain.push(newBlock);
-        //is this supposed to call class from network to broadcast the block to the network? lec7 page 13
 
-        //everytime a new block added, UTXO updated
-        //Call storage for updating the cache
-        newBlock.Transaction.txID
+    mineBlock(block) {
+        let hash = doubleHashLoop(block.blockHeader)
+        while (hash.substring(0, 4) !== '0'.repeat(block.blockHeader.difficulty)) {
+            if(this.length==block.blockIndex){
+                return(0)
+            }
+            block.blockHeader.nonce+=1
+            hash = doubleHashLoop(block.blockHeader)
+            console.log(hash)
+            console.log(block.blockHeader.nonce)
+        }
+        block.currentBlockHash=hash
+        return(block)
+        
     }
 
     isChainValid() {

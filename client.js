@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const { p2pNetwork } = require('./network');
 const { post } = require('superagent');
 const moment=require('moment');
+const { Worker } = require("worker_threads");
 
 app=express()
 const blockchainObj=new blockchain.BlockChain()
@@ -83,15 +84,16 @@ app.post('/wallet/Create',function(req,res){
 })
 
 app.get("/mining/:address",function(req,res){
+    const worker = new Worker("./worker.js");
     if(blockchainObj.txPool.length!=0){
     var txns=[...blockchainObj.txPool]
     }else var txns=[]
     blockchainObj.txPool=[]
     var newBlockHeader=new block.BlockHeader(blockchainObj.getLatestBlock().currentBlockHash,moment().unix().toString())
     var coinbaseTx=blockchainObj.createCoinbaseTx(txns,req.params.address)
-    var newBlock=new block.Block(blockchainObj.length+1,newBlockHeader,[coinbaseTx,...txns])
-    newBlock.blockHeader.nonce=newBlock.mineBlock()
-    newBlock.blockHeader.currentBlockHash=newBlock.hashBlockHeader()
+    var newBlock=new block.Block(blockchain.BlockChain.length+1,newBlockHeader,[coinbaseTx,...txns])
+    newBlock=blockchainObj.mineBlock(newBlock)
+    blockchainObj.blockchain.push(newBlock)
     console.log(newBlock)
 })
 
@@ -131,6 +133,7 @@ app.get('/testing',function(req,res){
         var newTx=obj.createTransaction("1UK87hKPfkepZNgjE8bLaqrUj2o8dG5",0.000005,fee=0.000005)
         console.log(obj.isTransactionValid(newTx))
         console.log(newTx)
+        res.send('test successfully')
     }
 
 })
