@@ -100,6 +100,7 @@ class BlockChain{
     }
     //tempTxInfo[0]=blockIndex,tempTxInfo[1]=txid,tempTxInfo[2]=vout Index=>my unspent address
     createTransaction(sendToAddress,amount,fee=0.00001){
+        try{
         var resultTxOut=[]  
         var resultTxIn=[]
         var balance=0
@@ -135,6 +136,9 @@ class BlockChain{
             resultTx=new Transaction(sendToAddress,amount,resultTxIn,resultTxOut,fee,timeNow)
         }
         return resultTx
+        }catch{
+            console.log("tx not found")
+        }
     }
 
     isTransactionValid(tx){
@@ -209,7 +213,7 @@ class BlockChain{
         var resultTx=new Transaction(address,totalTxFee+coinbaseReward,['coinbase'],[txOut],0,moment().unix().toString())
         return resultTx
     }
-
+    //blockindex= height
     searchTxWithIndex(txid,blockIndex){
         for(var tx of this.blockchain[parseInt(blockIndex)-1].txns){
             if(txid==tx.txid){
@@ -217,10 +221,15 @@ class BlockChain{
             }
         }
         return(null)
+        //database retrive tx from blcokchain    
     }
+     //find block transaction from database
 
-    //find block transaction from database
+
+
     searchTxInBlock(txid){
+        //retreive all block from blockchain in db
+
         for (var block of this.blockchain) {
             if(block.blockIndex==1){
                 continue

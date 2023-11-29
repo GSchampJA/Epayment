@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const { p2pNetwork } = require('./network');
 const { post } = require('superagent');
 const moment=require('moment');
-const { Worker } = require("worker_threads");
+const { Worker} = require("worker_threads");
 const cors = require('cors');
 
 app=express()
@@ -103,11 +103,17 @@ app.post('/wallet/valid_existing',function(req,res){
 })
 
 
-app.post("/stopMining",(req,res)=>{
-    blockchain.BlockChain.stopMining=req.body.isMining
-    if(req.body.isMining==true){
+app.get("/stopMining",(req,res)=>{
+    if(req.body.isMining==false){
         networkObj.miningRequest(getMiningAddress)
     }
+    if(blockchain.BlockChain.stopMining==true){
+        blockchain.BlockChain.stopMining=false
+    }
+    if(blockchain.BlockChain.stopMining==false){
+        blockchain.BlockChain.stopMining=true
+    }
+    res.send('Mining Stopped or start')
     //stop mining proccess, true => stop mining ,false => mine
 })  
 
@@ -145,6 +151,8 @@ app.get("/mining",async (req,res)=>{
             console.log(data)
             console.log(blockchain.BlockChain.length)
             blockchainObj.blockchain.push(data)
+            //database save data 
+
             //psuh to blockchain 
             //save this mined block to database
             //networkObj.miningRequest(getMiningAddress())
@@ -154,7 +162,8 @@ app.get("/mining",async (req,res)=>{
         }
     });
     worker.on("error", (msg) => {
-        reject(`An error ocurred: ${msg}`);
+        console.log(`An error ocurred: ${msg}`);
+        res.send("Mining stopped")
     });
     //newBlock= await createWorker(newBlock)
 })
@@ -187,6 +196,7 @@ app.get('/testing',function(req,res){
         var blockheaderObj= new BlockHeader('1',null,'1701107223');
         var blockObj=new Block(2,blockheaderObj,[coinBaseTx]);
         obj.blockchain.push(blockObj);
+        debugger
         // console.log(obj)
         var unspentedTx=obj.scanUnspentTx(new Map([['1qwFqhokiTASXVSTqQyNAuit6qfbMpx','1']]))
         var addressToSearch=[...unspentedTx.keys()][0].split(':')[1]
