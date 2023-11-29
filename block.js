@@ -64,7 +64,7 @@ class BlockHeader{
         this.previousBlockHeader=previousBlockHeader
         this.merkleRoot=""
         this.timeStamp=timeStamp
-        this.difficulty=6
+        this.difficulty=5
         this.nonce=0
     }   
 }

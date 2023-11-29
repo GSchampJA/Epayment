@@ -12,6 +12,15 @@ const moment=require('moment');
 const { Worker } = require("worker_threads");
 
 app=express()
+function getMiningAddress(){
+    if(wallet.wallet.walletAddress.size!==0){
+        return([...wallet.wallet.walletAddress.keys()][0])
+    }
+    else{
+        return false
+    }
+}
+
 const blockchainObj=new blockchain.BlockChain()
 //give an array of addresses
 const networkObj=new p2pNetwork()
@@ -58,7 +67,7 @@ app.post('/verifyTx',function(req,res){
         res.send("rejected")
     }
     if(blockchainObj.isTransactionValid(newTx)){
-        blockchainObj.txPool.push(newTx)
+        blockchainObj.txPool.add(newTx)
     }
 })
 
@@ -94,19 +103,29 @@ app.post('/wallet/valid_existing',function(req,res){
 
 app.post("/stopMining",(req,res)=>{
     blockchain.BlockChain.stopMining=req.body.isMining
+    if(req.body.isMining==true){
+        networkObj.miningRequest(getMiningAddress)
+    }
     //stop mining proccess, true => stop mining ,false => mine
 })  
 
 app.post("/verifyBlock",(req,res)=>{
-    blockchainObj.isBlockValid(req.body.block)
-    networkObj.boardcast("/verifyBlock",'post',req.ip,{"block":req.body.block})
+    var block=req.body.block
+    if (blockchainObj.isBlockValid(block)){
+        blockchain.BlockChain.length++
+        networkObj.boardcast("/verifyBlock",'post',req.ip,{"block":req.body.block})
+        for(tx of block.txns){
+            blockchainObj.txPool.removeElement(tx)
+        }
+        networkObj.miningRequest(getMiningAddress())
+    }
+
 })
 
 app.get("/mining/:address",async (req,res)=>{
-    if(blockchainObj.txPool.length!=0){
-    var txns=[...blockchainObj.txPool]
+    if(blockchainObj.txPool.size_of_list()!=0){
+    var txns=blockchainObj.txPool.toArray()
     }else var txns=[]
-    blockchainObj.txPool=[]
     var newBlockHeader=new block.BlockHeader(blockchainObj.getLatestBlock().currentBlockHash,moment().unix().toString())
     var coinbaseTx=blockchainObj.createCoinbaseTx(txns,req.params.address)
     var newBlock=new block.Block(blockchain.BlockChain.length+1,newBlockHeader,[coinbaseTx,...txns])
@@ -114,7 +133,19 @@ app.get("/mining/:address",async (req,res)=>{
         workerData: { block: newBlock },
     });
     worker.on("message", (data) => {
-
+        if(data!=false ){
+            if(txns.length!=0){
+                for(tx of txns){
+                    blockchainObj.txPool.removeElement(tx)
+                }
+            }
+            console.log( blockchainObj.txPool.printList())
+            console.log(data)
+            //networkObj.miningRequest(getMiningAddress())
+            networkObj.miningRequest('1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
+        }else{
+            console.log("Block Mined by others")
+        }
     });
     worker.on("error", (msg) => {
         reject(`An error ocurred: ${msg}`);
