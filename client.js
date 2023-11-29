@@ -77,9 +77,27 @@ app.post('/wallet/Create',function(req,res){
     // walletname = newwallet.wallet[0].walletname
     // walletaddr = wallet.wallet(walletname)
     var publicKeyHash,privateKey
-    [publicKeyHash,privateKey]=wallet.wallet.createNewAddress()
+    [publicKeyHash,privateKey]= wallet.createNewAddress()
 
-    res.send('Wallet address: ' + JSON.stringify(walletAddress));
+    res.json({ publicKeyHash, privateKey });
+})
+
+// create address - input:  privateKey
+//          --> return (private key: string) to f/e ; b/e keeps the username, private key and public keys(address)
+app.post('/wallet/CreateAdress',function(req,res){
+    const {wallet}=require('./wallet');
+    const prK = req.body.privateKey
+    // var publicKeyHash, privateKey
+
+    result = wallet.importPrivateKey(prK);
+    if (result === false) {
+        // const errorMessage
+        res.status(500).json({ error: 'Key is imported already.' });
+    } else {
+        const publicKeyHash = result[0]
+        const tempPublicKey = result[0]
+        res.json({ publicKeyHash, tempPublicKey });
+    }
 })
 
 app.get("/mining/:address",function(req,res){
