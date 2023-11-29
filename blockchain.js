@@ -1,4 +1,3 @@
-import {List, Item} from 'linked-list'
 const {Block,BlockHeader,txin,txout,Transaction}=require('./block');
 const moment=require('moment');
 const minTxns=require("./utility/algorithm")

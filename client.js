@@ -10,8 +10,10 @@ const { p2pNetwork } = require('./network');
 const { post } = require('superagent');
 const moment=require('moment');
 const { Worker } = require("worker_threads");
+const cors = require('cors');
 
 app=express()
+app.use(cors());
 const blockchainObj=new blockchain.BlockChain()
 //give an array of addresses
 const networkObj=new p2pNetwork()
