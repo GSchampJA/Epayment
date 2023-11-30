@@ -50,6 +50,23 @@ app.get("/", function (req, res) {
     
 });
 
+app.get("/searchBlock", function (req, res) {
+
+    const searchIndex = req.query.blockIndex
+    const lengthOfChain = blockchainObj.blockchain.length
+
+    console.log('search index: ', searchIndex)
+
+    console.log('chainLen:', lengthOfChain)
+
+    if ((searchIndex+1) > lengthOfChain) {
+        // out of index
+        return res.json({})
+    } else {
+        return res.json(blockchainObj.blockchain[searchIndex])
+    }
+});
+
 app.get("/getBlockBlockchain/:blockIndex",(req, res)=>{
     // open db
     // get blockchain based on id

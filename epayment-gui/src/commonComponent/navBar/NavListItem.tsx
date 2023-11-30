@@ -7,7 +7,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-
+import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import NavButton from './NavButton';
 import { AppUrl } from '../objectType/AppUrl';
 
@@ -17,6 +17,7 @@ export const NavListItems_primary = (
 
     <NavButton url={AppUrl.Home} icon={<DashboardIcon />} buttonTitle='Dashboard'/>
     <NavButton url={AppUrl.Transaction} icon={<ShoppingCartIcon />} buttonTitle='Transaction'/>
+    <NavButton url={AppUrl.SearchBlockDetail} icon={<ViewInArIcon />} buttonTitle='Block'/>
     <NavButton url={AppUrl.ReactAmin} icon={<AssignmentIcon />} buttonTitle='React'/>
 
   </React.Fragment>

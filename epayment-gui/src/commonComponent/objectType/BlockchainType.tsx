@@ -1,23 +1,18 @@
-
 export interface Block {
-    index: number,
-    timestamp: Date,
-    data: string,
-    previousHash: string,
-    hash: string,
-    nonce: number,
-    difficulty: number
+    blockIndex: number;
+    blockHeader: {
+      version: number;
+      previousBlockHeader: string;
+      merkleRoot: string;
+      timeStamp: string;
+      difficulty: number;
+      nonce: number;
+    };
+    txns: [];
+    currentBlockHash: string;
 }
+  
 
-export interface BlockHeader {
-    index: number,
-    timestamp: Date,
-    data: string,
-    previousHash: string,
-    hash: string,
-    nonce: number,
-    difficulty: number
-}
 
 export interface TxAddress {
     address: string,
@@ -199,4 +194,23 @@ export const utxosExample: UtxO[] = [
 ];
 
 
+// export interface Block {
+//     index: number,
+//     timestamp: Date,
+//     data: string,
+//     previousHash: string,
+//     hash: string,
+//     nonce: number,
+//     difficulty: number
+// }
+
+// export interface BlockHeader {
+//     index: number,
+//     timestamp: Date,
+//     data: string,
+//     previousHash: string,
+//     hash: string,
+//     nonce: number,
+//     difficulty: number
+// }
 

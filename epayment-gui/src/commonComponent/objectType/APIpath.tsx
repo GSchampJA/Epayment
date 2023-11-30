@@ -5,6 +5,7 @@ export enum ApiPath {
     StopMining = `/stopMining`,
     CeateNewTx = `/createTx`,
     checkWalletUTx = `/wallet/unspentTx`,
+    searchBlock = `/searchBlock`
 
     
 }
