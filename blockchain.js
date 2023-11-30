@@ -13,6 +13,7 @@ class BlockChain{
     static length=1
     constructor(){
         this.txPool=new LinkedList()
+        this.utxoPool=new LinkedList()
         this.blockchain=[this.#getGenesisBlock()]
 
 
@@ -33,7 +34,7 @@ class BlockChain{
     #getGenesisBlock(){
         let blockHeader=new BlockHeader("0x0","1701332276")
 
-        return new Block(1,blockHeader,[null])
+        return new Block(1,blockHeader,[''])
     }
 
 

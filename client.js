@@ -83,7 +83,6 @@ app.post('/createTx',function(req,res){
 
 app.post('/verifyTx',function(req,res){
     var newTx= req.body.tx
-    debugger
     if(newTx.txin[0]=='coinbase'){
         res.send("rejected")
     }
@@ -92,7 +91,6 @@ app.post('/verifyTx',function(req,res){
         blockchainObj.txPool.add(newTx)
         res.send("accepted")
     }
-    res.send("rejected")
 })
 
 // create address - 
@@ -129,7 +127,7 @@ app.post('/wallet/valid_existing',function(req,res){
 
     
 })
-
+var worker
 
 app.get("/stopMining",(req,res)=>{
     debugger
@@ -139,6 +137,10 @@ app.get("/stopMining",(req,res)=>{
         networkObj.miningRequest()
     }else{
         blockchain.BlockChain.stopMining=true
+        if(worker){
+            console.log(worker)
+            worker.terminate();
+        }
     }
 
     console.log('stopMining:', blockchain.BlockChain.stopMining)
@@ -148,7 +150,6 @@ app.get("/stopMining",(req,res)=>{
     //stop mining proccess, true => stop mining ,false => mine
 })  
 
-var worker
 
 app.post("/verifyBlock",(req,res)=>{
     var block=req.body.block
@@ -158,6 +159,7 @@ app.post("/verifyBlock",(req,res)=>{
         blockchain.BlockChain.length++
         for(tx of block.txns){
             blockchainObj.txPool.removeElement(tx)
+            blockchainObj.utxoPool.add(tx)
         }
         if(blockchain.BlockChain.stopMining==false){
 
@@ -191,6 +193,7 @@ app.get("/mining",async (req,res)=>{
             if(txns.length!=0){
                 for(tx of txns){
                     blockchainObj.txPool.removeElement(tx)
+                    blockchainObj.utxoPool.add(tx)
                 }
             }
             blockchain.BlockChain.length++
@@ -221,9 +224,9 @@ app.get("/wallet/unspentTx", function (req, res) {
     //provide wallet information
     var map=new Map()
     map=blockchainObj.scanUnspentTx(wallet.wallet.walletAddress)
-    console.log(wallet.wallet.walletAddress)
-    console.log(blockchainObj.blockchain[2].txns)
-    console.log(map)
+    // console.log(wallet.wallet.walletAddress)
+    // console.log(blockchainObj.blockchain[2].txns)
+    // console.log(map)
     const jsonMap = JSON.parse(JSON.stringify(Object.fromEntries(map)));
     res.json(jsonMap)
 });

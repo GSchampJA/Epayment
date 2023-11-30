@@ -13,6 +13,7 @@ function minTxns(list,target){
             if(sum>=(target)){
                 temp=list.slice(start,i+1)
             }else{
+                sum=0
                 temp=[]
             }
         }
