@@ -6,7 +6,7 @@ const { doubleHashLoop}= require('./utility/hashUtility')
     let hash = doubleHashLoop(workerData.block.blockHeader)
     while (hash.slice(0, target) != '0'.repeat(target)) {
         if(workerData.length==index){
-            parentPort.postMessage(false);
+            throw new Error(console.error('Mining Interrupted'))
         }
         if(workerData.stopFlag==true){
             throw new Error(console.error('Mining stopped'))

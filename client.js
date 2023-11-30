@@ -11,6 +11,7 @@ const { post } = require('superagent');
 const moment=require('moment');
 const { Worker} = require("worker_threads");
 const cors = require('cors');
+const { verify } = require('crypto');
 
 app=express()
 function getMiningAddress(){
@@ -25,7 +26,7 @@ function getMiningAddress(){
 app.use(cors());
 const blockchainObj=new blockchain.BlockChain()
 //give an array of addresses
-const networkObj=new p2pNetwork(["158.132.9.30:8333"])
+const networkObj=new p2pNetwork(["158.132.9.197:8333","158.132.9.198:8333"])
 // connection to the database
 // need to download mongodb into local storage
 // paste the local mongodb link to .env file to connect do the connection of mongodb
@@ -71,7 +72,9 @@ app.post('/verifyTx',function(req,res){
     if(blockchainObj.isTxExist(newTx)==false && blockchainObj.isTransactionValid(newTx)){
         networkObj.boardcast('/verifyTx','post',{"tx":newTx},'tx')
         blockchainObj.txPool.add(newTx)
+        res.send("accepted")
     }
+    res.send("rejected")
 })
 
 // create address - 
@@ -127,6 +130,8 @@ app.get("/stopMining",(req,res)=>{
     //stop mining proccess, true => stop mining ,false => mine
 })  
 
+var worker
+
 app.post("/verifyBlock",(req,res)=>{
     var block=req.body.block
     if (blockchainObj.isBlockValid(block) &&!blockchainObj.isBlockExist(block)){
@@ -136,9 +141,15 @@ app.post("/verifyBlock",(req,res)=>{
         for(tx of block.txns){
             blockchainObj.txPool.removeElement(tx)
         }
-        // if(blockchain.BlockChain.stopMining==false){
-        //     networkObj.miningRequest()
-        // }
+        if(blockchain.BlockChain.stopMining==false){
+
+            if(worker){
+                console.log(worker)
+                worker.terminate();
+            }
+            networkObj.miningRequest()
+        }
+        // console.log("verified")
     }
     console.log(blockchainObj.blockchain)
 
@@ -149,11 +160,12 @@ app.get("/mining",async (req,res)=>{
     var txns=blockchainObj.txPool.toArray()
     }else var txns=[]
     var newBlockHeader=new block.BlockHeader(blockchainObj.getLatestBlock().currentBlockHash,moment().unix().toString())
-    newBlockHeader.difficulty=6
-    var coinbaseTx=blockchainObj.createCoinbaseTx(txns,'1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
+    newBlockHeader.difficulty=5
+    //var coinbaseTx=blockchainObj.createCoinbaseTx(txns,'1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
+    var coinbaseTx=blockchainObj.createCoinbaseTx(txns,getMiningAddress())
     var newBlock=new block.Block(blockchain.BlockChain.length+1,newBlockHeader,[coinbaseTx,...txns])
     
-    const worker = new Worker("./mining.js", {
+    worker = new Worker("./mining.js", {
         workerData: { block: newBlock , length:blockchain.BlockChain.length, stopFlag:blockchain.BlockChain.stopMining},
     });
     worker.on("message", (data) => {
@@ -164,8 +176,8 @@ app.get("/mining",async (req,res)=>{
                 }
             }
             blockchain.BlockChain.length++
-            // console.log(data)
-            // console.log(blockchain.BlockChain.length)
+            console.log(data)
+            console.log(blockchain.BlockChain.length)
             blockchainObj.blockchain.push(data)
             console.log("mined by c29")
             networkObj.boardcast("/verifyBlock","post",{"block":data},"block")
