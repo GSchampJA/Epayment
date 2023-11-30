@@ -1,10 +1,8 @@
 import { Card, Col, Container, Row } from 'react-bootstrap'
-import { TextField, MenuItem, FormControl, Button, FormGroup, Table, TableRow, TableCell, CircularProgress } from '@mui/material'
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { TextField, MenuItem, FormControl, Button, FormGroup, Table, CircularProgress } from '@mui/material'
+import Select from '@mui/material/Select';
 import { useState } from 'react';
-import { Transaction, Address, Block } from '../../commonComponent/objectType/BlockchainType';
-import TxRow, { TxRowProps } from './TxRow';
-import txExample from './transactionExample.json'
+import { Block } from '../../commonComponent/objectType/BlockchainType';
 import { sendApi_searchBlock } from '../../commonComponent/api/CommonApi';
 import { toast } from 'react-toastify';
 
@@ -128,63 +126,137 @@ const SearchBlock = () => {
                     <hr></hr>
                 </Row>
 
+                {/* <div>
+                    <BlockTable block={state.searchResult} />
+                </div> */}
+
                 <Card className='TransactionBorder_Card'>
-                    {/* <Table> */}
+                    <Card className='noBorderLine'>
+                    <Table>
                         <Row>
-                            <Col md={2} variant="head">blockIndex:</Col>
+                            <Col md={2} variant="head" className='table-hearder-tag'>blockIndex:</Col>
                             <Col>{state.searchResult?.blockIndex}</Col>
                         </Row>
 
                         {/* blockHeader */}
                         <Row className='mt-4'>
-                            <Col md={2}  variant="head">Block Header:</Col>
-                            {/* <Col>{state.searchResult?.blockHeader}</Col> */}
+                            <Col md={2}  variant="head" className='table-hearder-tag'>Block Header:</Col>
                         </Row>
                         <Row>
                             <Col md={2}  variant="head"></Col>
-                            <Col md={2} variant="head">version:</Col>
+                            <Col md={2} variant="head" className='table-hearder-tag'>version:</Col>
                             <Col>{state.searchResult?.blockHeader.version}</Col>
                         </Row>
-                        <Row>
+                        <Row className='mt-1'>
                             <Col md={2}  variant="head"></Col>
-                            <Col md={2} variant="head">previousBlockHeader:</Col>
+                            <Col md={3} variant="head" className='table-hearder-tag' style={{width: 'fit-content', minWidth: '11rem'}}>previousBlockHeader:</Col>
                             <Col>{state.searchResult?.blockHeader.previousBlockHeader}</Col>
                         </Row>
-                        <Row>
+                        <Row className='mt-1'>
                             <Col md={2}  variant="head"></Col>
-                            <Col md={2} variant="head">merkleRoot:</Col>
+                            <Col md={2} variant="head" className='table-hearder-tag'>merkleRoot:</Col>
                             <Col>{state.searchResult?.blockHeader.merkleRoot}</Col>
                         </Row>
-                        <Row>
+                        <Row className='mt-1'>
                             <Col md={2}  variant="head"></Col>
-                            <Col md={2} variant="head">timeStamp:</Col>
+                            <Col md={2} variant="head" className='table-hearder-tag'>timeStamp:</Col>
                             <Col>{state.searchResult?.blockHeader.timeStamp}</Col>
                         </Row>
-                        <Row>
+                        <Row className='mt-1'>
                             <Col md={2}  variant="head"></Col>
-                            <Col md={2} variant="head">difficulty:</Col>
+                            <Col md={2} variant="head" className='table-hearder-tag'>difficulty:</Col>
                             <Col>{state.searchResult?.blockHeader.difficulty}</Col>
                         </Row>
-                        <Row>
+                        <Row className='mt-1'>
                             <Col md={2}  variant="head"></Col>
-                            <Col md={2} variant="head">nonce:</Col>
+                            <Col md={2} variant="head" className='table-hearder-tag'>nonce:</Col>
                             <Col>{state.searchResult?.blockHeader.nonce}</Col>
                         </Row>
 
 
                         <Row className='mt-4'>
-                            <Col md={2}  variant="head">txns:</Col>
-                            <Col>[{state.searchResult?.txns.map(item => {
-                                return JSON.stringify(item) + ', '
-                            })}]</Col>
+                            <Col md={2}  variant="head" className='table-hearder-tag'>txns:</Col>
+                            <Col></Col>
                         </Row>
-                        <Row className='mt-2'>
-                            <Col md={2}  variant="head">currentBlockHash:</Col>
+
+                        {state.searchResult?.txns.map(item => {
+
+
+                            return (
+                                <>
+                                <Row>
+                                    <Col md={2}  variant="head"></Col>
+                                    <Col md={2}  variant="head" className='table-hearder-tag'>txid:</Col>
+                                    <Col>{item.txid}</Col>
+                                </Row>
+                                <Row className='mt-1'>
+                                    <Col md={2}  variant="head"></Col>
+                                    <Col md={2}  variant="head" className='table-hearder-tag'>toAddess:</Col>
+                                    <Col>{item.toAddess}</Col>
+                                </Row>
+                                {/* <Row>
+                                    <Col md={2}  variant="head"></Col>
+                                    <Col md={2}  variant="head">toAddess:</Col>
+                                    <Col>{'asc'}</Col>
+                                </Row> */}
+                                <Row className='mt-1'>
+                                    <Col md={2}  variant="head"></Col>
+                                    <Col md={2}  variant="head" className='table-hearder-tag'>amount:</Col>
+                                    <Col>{item.amount}</Col>
+                                </Row>
+                                <Row className='mt-1'>
+                                    <Col md={2}  variant="head"></Col>
+                                    <Col md={2}  variant="head" className='table-hearder-tag'>txinCount:</Col>
+                                    <Col>{item.txinCount}</Col>
+                                </Row>
+                                <Row className='mt-1'>
+                                    <Col md={2}  variant="head"></Col>
+                                    <Col md={2}  variant="head" className='table-hearder-tag'>txin:</Col>
+                                    <Col>{item.txin.map(Txin => {return JSON.stringify(Txin) + ', '})}</Col>
+                                </Row>
+                                <Row className='mt-1'>
+                                    <Col md={2}  variant="head"></Col>
+                                    <Col md={2}  variant="head" className='table-hearder-tag'>txoutputCount:</Col>
+                                    <Col>{item.txoutputCount}</Col>
+                                </Row>
+                                <Row className='mt-1'>
+                                    <Col md={2}  variant="head"></Col>
+                                    <Col md={2}  variant="head" className='table-hearder-tag' style={{maxHeight: '1.5rem'}}>txout:</Col>
+                                    <Col>{item.txout.map(TxOut => {
+                                        return (<><Row style={{marginLeft: '0.2rem'}}>
+                                            <Col className='table-hearder-tag'  style={{width: 'fit-content', maxWidth: '6.5rem'}}>toAddress:</Col>
+                                            <Col>{TxOut.toAddress}</Col>
+                                            <Col className='table-hearder-tag' style={{width: 'fit-content', maxWidth: '5.5rem'}}>amount:</Col>
+                                            <Col>{TxOut.amount}</Col>
+                                            </Row><Row className='mt-1' style={{marginLeft: '0.2rem'}}>
+                                            <Col className='table-hearder-tag'  style={{maxWidth: '6.5rem'}}>lockScript:</Col>
+                                            <Col>{TxOut.lockScript}</Col>
+                                        </Row></>)
+                                    })}</Col>
+                                </Row>
+                                <Row className='mt-1'>
+                                    <Col md={2}  variant="head"></Col>
+                                    <Col md={2}  variant="head" className='table-hearder-tag'>fee:</Col>
+                                    <Col>{item.fee}</Col>
+                                </Row>
+                                <Row className='mt-1'>
+                                    <Col md={2}  variant="head"></Col>
+                                    <Col md={2}  variant="head" className='table-hearder-tag'>timestamp:</Col>
+                                    <Col>{item.timestamp}</Col>
+                                </Row>
+                                </>
+                            )
+                        })}
+
+
+
+                        <Row className='mt-4'>
+                            <Col md={2}  variant="head" className='table-hearder-tag' style={{width: 'fit-content', minWidth: '11.5rem'}}>currentBlockHash:</Col>
                             <Col>{state.searchResult?.currentBlockHash}</Col>
                         </Row>
-                    {/* </Table> */}
+                    </Table>
 
-                    
+                    </Card>
                 </Card>
 
                 
