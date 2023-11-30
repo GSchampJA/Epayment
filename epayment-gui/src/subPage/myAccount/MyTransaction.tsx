@@ -9,6 +9,7 @@ import CopyToClipboardButton from '../../commonComponent/input/CopyToClipboardBu
 import { useContext, useReducer, useState } from 'react';
 import { UserInfoContext } from '../../commonComponent/UserInfoContext';
 import { sendApi_createTx } from './MyAccountApi';
+import { toast } from 'react-toastify';
 
 enum pageMode {
     DEFAULT = 'default',
@@ -89,6 +90,14 @@ type Action = {
                     fee_errorText: undefined,
                 }
             }
+        case ActionType.UPDATE_TX_INPUT_ERROR:
+            return {
+                ...state,
+                tx_inputError: {
+                    ...state.tx_inputError,
+                    [action.target]: action.value
+                }
+            }
         default:
             return state;
     }
@@ -114,7 +123,17 @@ const  MyTxPage = () => {
     }
 
     const makeTx = () => {
-        if (state.tx_input.amount && state.tx_input.toAdress?.trim() && state.tx_input.fee) {
+
+        console.log('Validation: ', (!!state.tx_input.amount && !!state.tx_input.toAdress?.trim() && !!state.tx_input.fee
+        && (state.tx_input.amount >= 0.00001) && (state.tx_input.fee >= 0.00001)
+        ))
+        // console.log('Validation: ', (state.tx_input.amount && state.tx_input.toAdress?.trim() && state.tx_input.fee
+        // && state.tx_input.amount > 0.00001 && state.tx_input.fee > 0.00001
+        // ))
+        if (!!state.tx_input.amount && !!state.tx_input.toAdress?.trim() && !!state.tx_input.fee
+            && (state.tx_input.amount >= 0.00001) && (state.tx_input.fee >= 0.00001)
+            ) {
+                console.log('pass tx input validation')
 
             dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'toAdress', value: false})
             dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'amount', value: false})
@@ -129,24 +148,28 @@ const  MyTxPage = () => {
                 console.log(res)
             }).catch((er) => {
                 console.log(er)
+                toast.error(er.message);
+                toast.error(er.response.data.error);
             })
 
             dispatch({ type: ActionType.CLOSE_DIAG})
 
 
         }
-        
+        console.log('tx_input - toAdress:', !state.tx_input.toAdress?.trim())
         if (!state.tx_input.toAdress?.trim()) {
             dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'toAdress', value: true})
-        } else dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'toAdress', value: false})
-        
-        if (!state.tx_input.amount) {
+        } else {dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'toAdress', value: false})}
+
+        console.log('tx_input - amount: ', (!state.tx_input.amount || state.tx_input.amount < 0.00001))
+        if (!state.tx_input.amount || state.tx_input.amount < 0.00001) {
             dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'amount', value: true})
-        } else dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'amount', value: false})
-        
-        if (!state.tx_input.fee) {
+        } else {dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'amount', value: false})}
+
+        console.log('tx_input - fee:', (!state.tx_input.fee || state.tx_input.fee < 0.00001))
+        if (!state.tx_input.fee || state.tx_input.fee < 0.00001) {
             dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'fee', value: true})
-        } else dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'fee', value: false})
+        } else {dispatch({ type: ActionType.UPDATE_TX_INPUT_ERROR, target: 'fee', value: false})}
     }
 
 
@@ -184,17 +207,18 @@ const  MyTxPage = () => {
                             <TextField
                                 error={state.tx_inputError.amount}
                                 type='number'
+                                inputProps={{ step: "0.00001" }}
                                 label="Amount"
                                 value={state.tx_input.amount}
                                 helperText={"minimum amount is 0.00001"}
                                 onChange={(ref) => {
                                     var input_amount = Number(ref.target.value);
-                                    var toamount = 0.00001
-                                    if (input_amount > 0.00001) {
-                                        toamount = input_amount
-                                    }
+                                    // var toamount = 0.00001
+                                    // if (input_amount > 0.00001) {
+                                    //     toamount = input_amount
+                                    // }
 
-                                    dispatch({ type: ActionType.UPDATE_TX_INPUT, target:'amount', value: toamount})}
+                                    dispatch({ type: ActionType.UPDATE_TX_INPUT, target:'amount', value: input_amount})}
                                 }
                             />
                         </Col>
@@ -206,16 +230,17 @@ const  MyTxPage = () => {
                                 error={state.tx_inputError.fee}
                                 label="Fee"
                                 type='number'
+                                inputProps={{ step: "0.00001" }}
                                 value={state.tx_input.fee}
                                 helperText={"minimum fee is 0.00001"}
                                 onChange={(ref) => {
                                     var input_fee = Number(ref.target.value);
-                                    var tofee = 0.00001
-                                    if (input_fee > 0.00001) {
-                                        tofee = input_fee
-                                    }
+                                    // var tofee = 0.00001
+                                    // if (input_fee > 0.00001) {
+                                    //     tofee = input_fee
+                                    // }
 
-                                    dispatch({ type: ActionType.UPDATE_TX_INPUT, target:'fee', value: tofee})}
+                                    dispatch({ type: ActionType.UPDATE_TX_INPUT, target:'fee', value: input_fee})}
                                 }
                             />
                         </Col>

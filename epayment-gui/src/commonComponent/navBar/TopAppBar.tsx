@@ -72,14 +72,17 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
     //   console.log(er); 
     //   toast.error(`Server error 500: ${er}`)
     // })
-    sendApi_stopMining()
-    // .catch((er) => {
-    //   console.log(er); 
-    //   toast.error(`Server error 500: ${er}`)
-    // })
+    sendApi_stopMining().then(res => {
+      const isMining = res.data.isMining 
+      setIsStopMining(!isMining)
+      setIsMiningBtnDisable(true)
+    })
+    .catch((er) => {
+      console.log(er); 
+      toast.error(`Server error 500: ${er}`)
+    })
 
-    setIsStopMining(!isStopMining)
-    setIsMiningBtnDisable(true)
+    
   }
 
   return (

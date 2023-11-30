@@ -111,6 +111,7 @@ app.post('/wallet/valid_existing',function(req,res){
 
 
 app.get("/stopMining",(req,res)=>{
+    const isMining = (blockchain.BlockChain.stopMining===true) ? true : false
     if(blockchain.BlockChain.stopMining==true){
         blockchain.BlockChain.stopMining=false
         networkObj.miningRequest()
@@ -118,8 +119,10 @@ app.get("/stopMining",(req,res)=>{
         blockchain.BlockChain.stopMining=true
     }
 
-    console.log(blockchain.BlockChain.stopMining)
-    res.send('Mining Stopped or start')
+    console.log('stopMining:', blockchain.BlockChain.stopMining)
+    
+    res.json({isMining})
+    // res.send('Mining Stopped or start')
     //stop mining proccess, true => stop mining ,false => mine
 })  
 
