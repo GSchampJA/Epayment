@@ -52,6 +52,10 @@ const SearchBlock = () => {
                 console.log('receive api - sendApi_searchBlock')
                 if (res.data.blockIndex === undefined) {
                     toast.error('Cannot find such block based on input blockIndex')
+                    setState({
+                        ...state,
+                        pageMode: pageMode.DEFAULT
+                    })
                     return
                 }
     
