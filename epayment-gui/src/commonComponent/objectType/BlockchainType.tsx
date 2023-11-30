@@ -13,7 +13,7 @@ export interface Block {
 }
 
 export interface txns {
-    toAddress: string;
+    toAddess: string;
     amount: number;
     txinCount: number;
     txin: string[];

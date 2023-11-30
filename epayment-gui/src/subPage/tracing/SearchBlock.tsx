@@ -192,7 +192,7 @@ const SearchBlock = () => {
                                 <Row className='mt-1'>
                                     <Col md={2}  variant="head"></Col>
                                     <Col md={2}  variant="head" className='table-hearder-tag'>toAddess:</Col>
-                                    <Col>{item.toAddress}</Col>
+                                    <Col>{item.toAddess}</Col>
                                 </Row>
                                 {/* <Row>
                                     <Col md={2}  variant="head"></Col>
