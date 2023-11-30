@@ -59,11 +59,11 @@ app.get("/searchBlock", function (req, res) {
 
     console.log('chainLen:', lengthOfChain)
 
-    if ((searchIndex+1) > lengthOfChain) {
+    if ((searchIndex+1) > lengthOfChain || searchIndex < 2) {
         // out of index
         return res.json({})
     } else {
-        return res.json(blockchainObj.blockchain[searchIndex])
+        return res.json(blockchainObj.blockchain[searchIndex-1])
     }
 });
 

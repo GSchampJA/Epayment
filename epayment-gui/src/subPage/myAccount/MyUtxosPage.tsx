@@ -5,6 +5,7 @@ import { UtxO, utxosExample } from '../../commonComponent/objectType/BlockchainT
 import { UserInfoContext } from '../../commonComponent/UserInfoContext';
 import { HandleBoolean } from '../../commonComponent/tableElement/TableDisplay';
 import { WalletUTxResponse, sendApi_checkWalletUTx } from './MyAccountApi';
+import { toast } from 'react-toastify';
 
 enum pageMode {
     DEFAULT = 'default',
@@ -51,6 +52,8 @@ const  MyUtxosPage = () => {
                 uTxOsList: receiveUtxs,
                 totalAmount: sumAmount
             })
+        }).catch(err => {
+            toast.error('Unexpected error occured. ')
         })
     }
 
