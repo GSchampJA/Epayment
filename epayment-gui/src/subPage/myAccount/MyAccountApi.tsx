@@ -10,10 +10,19 @@ export interface CreateTxRequestBody {
 }
 
 
-
+export interface WalletUTxResponse {
+    [key: string]: number;
+}
 
 export const sendApi_createTx = (body: CreateTxRequestBody) => {
     const path = API_URL + ApiPath.CeateNewTx
     console.log("sendApi_createTx: ", path)
     return axios.post(path, body)
+} 
+
+// wallet/unspentTx
+export const sendApi_checkWalletUTx = (): Promise<AxiosResponse<WalletUTxResponse>> => {
+    const path = API_URL + ApiPath.checkWalletUTx
+    console.log("sendApi_checkWalletUTx: ", path)
+    return axios.get(path)
 } 
