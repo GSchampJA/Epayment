@@ -111,6 +111,7 @@ app.post('/wallet/valid_existing',function(req,res){
 
 
 app.get("/stopMining",(req,res)=>{
+    debugger
     const isMining = (blockchain.BlockChain.stopMining===true) ? true : false
     if(blockchain.BlockChain.stopMining==true){
         blockchain.BlockChain.stopMining=false
