@@ -25,7 +25,7 @@ function getMiningAddress(){
 app.use(cors());
 const blockchainObj=new blockchain.BlockChain()
 //give an array of addresses
-const networkObj=new p2pNetwork(["158.132.9.30:8333"])
+const networkObj=new p2pNetwork(["158.132.9.197:8333","158.132.9.196:8333"])
 // connection to the database
 // need to download mongodb into local storage
 // paste the local mongodb link to .env file to connect do the connection of mongodb
@@ -148,8 +148,32 @@ app.get("/mining",async (req,res)=>{
     if(blockchainObj.txPool.size_of_list()!=0){
     var txns=blockchainObj.txPool.toArray()
     }else var txns=[]
-    var newBlockHeader=new block.BlockHeader(blockchainObj.getLatestBlock().currentBlockHash,moment().unix().toString())
-    newBlockHeader.difficulty=6
+
+    var latestBlock = blockchainObj.getLatestBlock()
+    var newBlockHeader=new block.BlockHeader(latestBlock.currentBlockHash,moment().unix().toString())
+
+    if (latestBlock.blockIndex > 10) {
+        var latest2Block = blockchainObj.getLatestnBlock(2)
+        var latest10Block = blockchainObj.getLatestnBlock(10)
+
+        var totalTimeTaken = 0
+        var timeTaken = parseInt(latest2Block[0].blockHeader.timeStamp) - parseInt(latest2Block[1].blockHeader.timeStamp)
+
+        for (let i = 1; i < latest10Block.length; i++) {
+            let timeTaken = parseInt(latest10Block[i-1].blockHeader.timeStamp) - parseInt(latest10Block[i].blockHeader.timeStamp)
+
+            totalTimeTaken += timeTaken
+        }
+
+        var averageTime = totalTimeTaken / 10
+
+        if (timeTaken > averageTime) {
+            newBlockHeader.difficulty--
+        } else if (timeTaken < averageTime) {
+            newBlockHeader.difficulty++
+        }
+    }
+
     var coinbaseTx=blockchainObj.createCoinbaseTx(txns,'1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
     var newBlock=new block.Block(blockchain.BlockChain.length+1,newBlockHeader,[coinbaseTx,...txns])
     

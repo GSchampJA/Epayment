@@ -42,6 +42,16 @@ class BlockChain{
         return this.blockchain[this.blockchain.length - 1];
     }
 
+    getLatestnBlock(n) {
+        var blocks = []
+
+        for (let i = 1; i <= n; i++) {
+            blocks.push(this.blockchain[this.blockchain.length - i])
+        }
+
+        return blocks
+    }
+
 
     // mineBlock(block) {
     //     let hash = doubleHashLoop(block.blockHeader)
