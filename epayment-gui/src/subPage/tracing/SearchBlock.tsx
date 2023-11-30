@@ -188,7 +188,7 @@ const SearchBlock = () => {
 
                             return (
                                 <>
-                                <Row className={(index !== 1) ? `mt-3`: ``}>
+                                <Row className={(index !== 0) ? `mt-4`: ``}>
                                     <Col md={2}  variant="head"></Col>
                                     <Col md={2}  variant="head" className='table-hearder-tag'>txid:</Col>
                                     <Col>{item.txid}</Col>
@@ -216,7 +216,7 @@ const SearchBlock = () => {
                                 <Row className='mt-1'>
                                     <Col md={2}  variant="head"></Col>
                                     <Col md={2}  variant="head" className='table-hearder-tag'>txin:</Col>
-                                    <Col>{item.txin.map(Txin => {return JSON.stringify(Txin) + ', '}).length > 20 ? JSON.stringify(item.txin.map(Txin => {return JSON.stringify(Txin) + ', '})).substring(0, 20) + ` ...` : item.txin.map(Txin => {return JSON.stringify(Txin) + ', '})}</Col>
+                                    <Col>{JSON.stringify(item.txin.map(Txin => {return JSON.stringify(Txin) + ', '})).length > 20 ? JSON.stringify(item.txin.map(Txin => {return JSON.stringify(Txin) + ', '})).substring(0, 20) + ` ...` : item.txin.map(Txin => {return JSON.stringify(Txin) + ', '})}</Col>
                                 </Row>
                                 <Row className='mt-1'>
                                     <Col md={2}  variant="head"></Col>
