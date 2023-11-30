@@ -5,6 +5,7 @@ const {wallet}=require('./wallet')
 const { createHash, KeyObject } = require('crypto');
 const { doubleHashLoop,publicKeyHashfunc }= require('./utility/hashUtility')
 const {LinkedList}=require('./utility/linkList')
+const {storeBlockToDB} = require('./DB/storeBlockToDB')
 
 
 const coinbaseReward=0.00001
@@ -34,7 +35,9 @@ class BlockChain{
     #getGenesisBlock(){
         let blockHeader=new BlockHeader("0x0","1701332276")
 
-        return new Block(1,blockHeader,[''])
+        let firstBlock = new Block(1,blockHeader,['']);
+        storeBlockToDB(firstBlock)
+        return firstBlock;
     }
 
 

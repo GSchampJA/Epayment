@@ -4,13 +4,16 @@ block=require('./block'),
 blockchain=require('./blockchain')
 network=require('./network');
 const wallet = require('./wallet');
-require('dotenv').config()
-const mongoose = require('mongoose');
 const { p2pNetwork } = require('./network');
 const { post } = require('superagent');
 const moment=require('moment');
 const { Worker} = require("worker_threads");
 const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config()
+const {storeWalletPrivateKey} = require('./DB/storeWalletPrivateKey')
+const {storeBlockToDB} = require('./DB/storeBlockToDB')
+
 const { verify } = require('crypto');
 
 app=express()
@@ -66,13 +69,39 @@ app.get("/searchBlock", function (req, res) {
         return res.json(blockchainObj.blockchain[searchIndex-1])
     }
 });
+app.get("/wholeBlockchain", function (req, res) {
+    // redis
+});
 
-app.get("/getBlockBlockchain/:blockIndex",(req, res)=>{
-    // open db
-    // get blockchain based on id
-    // return block info
-})
+app.post("/testStoreChainToDB",function (req, res) {
+    try{
+        // console.log(blockchainObj.blockchain[0]);
+        for (let i = 0; i < blockchainObj.blockchain.length; i++){
+            storeBlockToDB(blockchainObj.getLatestBlock());
+        }
+        console.log(blockchainObj.blockchain)
+        res.status(201)
+    } catch (err){
+        res.status(500).json({ message: err.message })
+    }
+});
 
+
+app.get("/getBlockBlockchain/:id", function (req, res) {
+    mongoose.connect(process.env.DATABASE_URL)
+    const db = mongoose.connection
+
+    db.on('error',(error)=> console.error(error))
+    db.once('open',()=>console.log('Connect to database'))
+
+    try{
+        const testing = db.collection('blockchain').find({_id: req.params.id})
+        console.log(testing);
+        res.status(200)
+    } catch (err){
+        res.status(500).json({ message: err.message })
+    }
+});
 
 //get request from req of address,amount and fee
 app.post('/createTx',function(req,res){
@@ -100,8 +129,12 @@ app.post('/wallet/Create',function(req,res){
 
     var publicKeyHash,privateKey
     [publicKeyHash,privateKey]= wallet.createNewAddress()
-
-    return res.json({ publicKeyHash, privateKey });
+    try {
+        storeWalletPrivateKey(privateKey);
+        return res.json({ publicKeyHash, privateKey });
+    }catch {
+        return res.status(500)
+    }
 })
 
 // create address - input:  privateKey
@@ -207,6 +240,7 @@ app.get("/mining",async (req,res)=>{
             //save this mined block to database
             //networkObj.miningRequest(getMiningAddress())
             networkObj.miningRequest()
+            storeBlockToDB(data)
         }else{
             console.log("Block Mined by others")
         }
