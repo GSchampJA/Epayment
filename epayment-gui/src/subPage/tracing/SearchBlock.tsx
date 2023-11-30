@@ -131,6 +131,7 @@ const SearchBlock = () => {
                 </div> */}
 
                 <Card className='TransactionBorder_Card'>
+                    <Card className='noBorderLine'>
                     <Table>
                         <Row>
                             <Col md={2} variant="head" className='table-hearder-tag'>blockIndex:</Col>
@@ -148,7 +149,7 @@ const SearchBlock = () => {
                         </Row>
                         <Row className='mt-1'>
                             <Col md={2}  variant="head"></Col>
-                            <Col md={3} variant="head" className='table-hearder-tag' style={{width: 'fit-content', minWidth: '13.5rem'}}>previousBlockHeader:</Col>
+                            <Col md={3} variant="head" className='table-hearder-tag' style={{width: 'fit-content', minWidth: '11rem'}}>previousBlockHeader:</Col>
                             <Col>{state.searchResult?.blockHeader.previousBlockHeader}</Col>
                         </Row>
                         <Row className='mt-1'>
@@ -250,12 +251,12 @@ const SearchBlock = () => {
 
 
                         <Row className='mt-4'>
-                            <Col md={2}  variant="head" className='table-hearder-tag' style={{width: 'fit-content', minWidth: '13.5rem'}}>currentBlockHash:</Col>
+                            <Col md={2}  variant="head" className='table-hearder-tag' style={{width: 'fit-content', minWidth: '11.5rem'}}>currentBlockHash:</Col>
                             <Col>{state.searchResult?.currentBlockHash}</Col>
                         </Row>
                     </Table>
 
-                    
+                    </Card>
                 </Card>
 
                 
