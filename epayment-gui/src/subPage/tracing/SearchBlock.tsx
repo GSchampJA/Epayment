@@ -148,7 +148,7 @@ const SearchBlock = () => {
                         </Row>
                         <Row className='mt-1'>
                             <Col md={2}  variant="head"></Col>
-                            <Col md={3} variant="head" className='table-hearder-tag' style={{width: '20%'}}>previousBlockHeader:</Col>
+                            <Col md={3} variant="head" className='table-hearder-tag' style={{width: 'fit-content', minWidth: '13.5rem'}}>previousBlockHeader:</Col>
                             <Col>{state.searchResult?.blockHeader.previousBlockHeader}</Col>
                         </Row>
                         <Row className='mt-1'>
@@ -222,14 +222,15 @@ const SearchBlock = () => {
                                     <Col md={2}  variant="head"></Col>
                                     <Col md={2}  variant="head" className='table-hearder-tag' style={{maxHeight: '1.5rem'}}>txout:</Col>
                                     <Col>{item.txout.map(TxOut => {
-                                        return (<Row>
-                                            <Col className='table-hearder-tag'>toAddress:</Col>
+                                        return (<><Row style={{marginLeft: '0.2rem'}}>
+                                            <Col className='table-hearder-tag'  style={{width: 'fit-content', maxWidth: '6.5rem'}}>toAddress:</Col>
                                             <Col>{TxOut.toAddress}</Col>
-                                            <Col className='table-hearder-tag'>amount:</Col>
+                                            <Col className='table-hearder-tag' style={{width: 'fit-content', maxWidth: '5.5rem'}}>amount:</Col>
                                             <Col>{TxOut.amount}</Col>
-                                            <Col className='table-hearder-tag'  style={{maxWidth: '17%'}}>lockScript:</Col>
+                                            </Row><Row className='mt-1' style={{marginLeft: '0.2rem'}}>
+                                            <Col className='table-hearder-tag'  style={{maxWidth: '6.5rem'}}>lockScript:</Col>
                                             <Col>{TxOut.lockScript}</Col>
-                                        </Row>)
+                                        </Row></>)
                                     })}</Col>
                                 </Row>
                                 <Row className='mt-1'>
@@ -249,7 +250,7 @@ const SearchBlock = () => {
 
 
                         <Row className='mt-4'>
-                            <Col md={2}  variant="head" className='table-hearder-tag'>currentBlockHash:</Col>
+                            <Col md={2}  variant="head" className='table-hearder-tag' style={{width: 'fit-content', minWidth: '13.5rem'}}>currentBlockHash:</Col>
                             <Col>{state.searchResult?.currentBlockHash}</Col>
                         </Row>
                     </Table>
