@@ -110,11 +110,11 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
         ><Link className='HomepageLink' to={AppUrl.Home}> E-Payment </Link>
         </Typography>
 
-        <IconButton color="inherit" onClick={triggerMine}  disabled={isMiningBtnDisable}>
+        {(userInfo.logIn) && <IconButton color="inherit" onClick={triggerMine}  disabled={isMiningBtnDisable}>
           <Button style={{backgroundColor: "cornflowerblue", minWidth: '10rem'}} variant='contained' disabled={isMiningBtnDisable}>
             {isStopMining ? "Stopped Mining" : "Mining..."}
           </Button>
-        </IconButton>
+        </IconButton>}
         
         <IconButton color="inherit">
           <Badge badgeContent={4} color="secondary">
