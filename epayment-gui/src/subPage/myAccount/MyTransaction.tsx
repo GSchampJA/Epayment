@@ -146,6 +146,7 @@ const  MyTxPage = () => {
             }).then(res => {
                 console.log('response - sendApi_createTx:')
                 console.log(res)
+                toast.success('Success to create transaction')
             }).catch((er) => {
                 console.log(er)
                 toast.error(er.message);
