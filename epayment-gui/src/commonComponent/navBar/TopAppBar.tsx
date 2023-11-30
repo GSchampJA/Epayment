@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { UserInfoContext } from '../UserInfoContext';
 import { styled } from '@mui/material/styles';
 import { AppUrl } from '../objectType/AppUrl';
@@ -45,6 +45,7 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
 
   const { open, toggleDrawer } = props;
   const [ isStopMining, setIsStopMining] = useState(true);
+  const [ isMiningBtnDisable, setIsMiningBtnDisable] = useState(false);
 
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useContext(UserInfoContext);
@@ -59,6 +60,13 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
     navigate(AppUrl.Home)
   }
 
+  useEffect(() => {
+    setTimeout(() => {
+      setIsMiningBtnDisable(false)
+    }, 10000);
+
+  }, [isMiningBtnDisable])
+
   const triggerMine = () => {
     // sendApi_stopMining({isMining: !isStopMining}).catch((er) => {
     //   console.log(er); 
@@ -71,6 +79,7 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
     // })
 
     setIsStopMining(!isStopMining)
+    setIsMiningBtnDisable(true)
   }
 
   return (
@@ -98,8 +107,8 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
         ><Link className='HomepageLink' to={AppUrl.Home}> E-Payment </Link>
         </Typography>
 
-        <IconButton color="inherit" onClick={triggerMine}>
-          <Button style={{backgroundColor: "cornflowerblue"}} variant='contained'>
+        <IconButton color="inherit" onClick={triggerMine}  disabled={isMiningBtnDisable}>
+          <Button style={{backgroundColor: "cornflowerblue", minWidth: '10rem'}} variant='contained' disabled={isMiningBtnDisable}>
             {isStopMining ? "Stopped Mining" : "Mining..."}
           </Button>
         </IconButton>
