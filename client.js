@@ -183,9 +183,9 @@ app.get("/wallet/unspentTx", function (req, res) {
     map=blockchainObj.scanUnspentTx(wallet.wallet.walletAddress)
     console.log(wallet.wallet.walletAddress)
     console.log(blockchainObj.blockchain[2].txns)
-    debugger
     console.log(map)
-    res.json({map})
+    const jsonMap = JSON.parse(JSON.stringify(Object.fromEntries(map)));
+    res.json(jsonMap)
 });
 
 app.get("/utxo", function (req, res) {
