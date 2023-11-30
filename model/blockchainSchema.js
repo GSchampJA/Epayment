@@ -1,44 +1,26 @@
-const blockchainSchema = new mongoose.Schema({
-    blockIndex:{
-        type: Int16Array,
-        required: true,
-    },
-    toAddess:{
-        type: String,
-        required: true
-    },
-    blockHeader:{
-        type: String,
-        required: true
-    },
-    prevBlock:{
-        type: String,
-        required: true
-    },
-    amount:{
-        type: Int16Array,
-        required: true,
+var mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-    },
-    txinCount:{
-        type: Int16Array,
-        required: true
-    },
-    txin:{
-        type: Int16Array,
-        required: true,
-    },
-    txoutputCount:{
-        type: Int16Array,
-        required: true
-    },
-    txout:{
-        type: Int16Array,
-        required: true
-    },
-    fee:{
-        type: Int16Array,
-        required: true
-    }
+const blockHeader = new mongoose.Schema({
+    version: { type: Number} ,
+    previousBlockHeader: { type: String } ,
+    merkleRoot: { type: String },
+    timeStamp: { type: Number },
+    difficulty: { type:Number},
+    nonce: { type: Number},
+})
+
+const blockchainSchema = new mongoose.Schema({
+    blockIndex: String,
+    blockHeader:[blockHeader],
+    prevBlock: String,
+    amount: Number,
+    txinCount: Number, 
+    txin: Array,
+    txoutputCount:Number,
+    txout: Array,
+    fee: Number, 
 })
 // all info need to be stored
+
+module.exports = mongoose.model('NewBlockchain', blockchainSchema)

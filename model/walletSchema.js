@@ -1,6 +1,8 @@
+var mongoose = require('mongoose');
+const { Schema } = mongoose;
 const walletSchema = new mongoose.Schema({
     id:{
-        type: Int16Array,
+        type: mongoose.Types.ObjectId,
         required: true
     },
     privateKey:{
@@ -10,3 +12,5 @@ const walletSchema = new mongoose.Schema({
         required: true
     }
 })
+
+module.exports = mongoose.model('walletSchema', walletSchema)

@@ -9,7 +9,7 @@
     "http": "^0.0.1-security",
     "linked-list": "^3.1.0",
     "moment": "^2.29.4",
-    "mongoose": "^8.0.1",
+    "mongoose": "^8.0.2",
     "superagent": "^8.1.2"
   },
   "name": "blockchain",
