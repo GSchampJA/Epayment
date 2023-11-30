@@ -19,10 +19,10 @@ cd epayment-gui
 npm install --global yarn
 ```
 ```
-yarn install
+yarn install or npm install
 ```
 ```
-yarn start
+yarn start or npm start
 ```
 
 ### MongoDB (Storage)
