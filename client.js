@@ -25,7 +25,7 @@ function getMiningAddress(){
 app.use(cors());
 const blockchainObj=new blockchain.BlockChain()
 //give an array of addresses
-const networkObj=new p2pNetwork()
+const networkObj=new p2pNetwork(["158.132.9.30:8333","158.132.9.28:8333"])
 // connection to the database
 // need to download mongodb into local storage
 // paste the local mongodb link to .env file to connect do the connection of mongodb
@@ -59,17 +59,17 @@ app.get("/getBlockBlockchain/:blockIndex",(req, res)=>{
 //get request from req of address,amount and fee
 app.post('/createTx',function(req,res){
     var newTx=blockchainObj.createTransaction(req.body.address,req.body.amount,req.body.fee=0.00001)
-
-    networkObj.boardcast('/verifyTx','post',JSON.stringify(newTx),'JSON')
+    networkObj.boardcast('/verifyTx','post',{"tx":newTx},'tx')
     res.json(newTx)
 })
 
 app.post('/verifyTx',function(req,res){
-    var newTx= req.body
+    var newTx= req.body.tx
     if(newTx.txin[0]=='coinbase'){
         res.send("rejected")
     }
-    if(blockchainObj.isTransactionValid(newTx)){
+    if(blockchainObj.isTxExist(newTx)==false && blockchainObj.isTransactionValid(newTx)){
+        networkObj.boardcast('/verifyTx','post',{"tx":newTx},'tx')
         blockchainObj.txPool.add(newTx)
     }
 })
@@ -128,9 +128,10 @@ app.get("/stopMining",(req,res)=>{
 
 app.post("/verifyBlock",(req,res)=>{
     var block=req.body.block
-    if (blockchainObj.isBlockValid(block)){
+    if (blockchainObj.isBlockValid(block) &&!blockchainObj.isBlockExist(block)){
+        networkObj.boardcast("/verifyBlock",'post',{"block":block},"block")
+        blockchainObj.blockchain.push(block)
         blockchain.BlockChain.length++
-        networkObj.boardcast("/verifyBlock",'post',req.ip,{"block":req.body.block})
         for(tx of block.txns){
             blockchainObj.txPool.removeElement(tx)
         }
@@ -162,6 +163,7 @@ app.get("/mining",async (req,res)=>{
             console.log(data)
             console.log(blockchain.BlockChain.length)
             blockchainObj.blockchain.push(data)
+            networkObj.boardcast("/verifyBlock","post",{"block":data},"block")
             //database save data 
 
             //psuh to blockchain 
