@@ -18,6 +18,7 @@ import MyUtxosPage from './subPage/myAccount/MyUtxosPage';
 import MyTxPage from './subPage/myAccount/MyTransaction';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SearchBlock from './subPage/tracing/SearchBlock';
 
 export const API_URL = process.env.REACT_APP_API_URL;
 const App = () => {
@@ -49,6 +50,7 @@ const App = () => {
             </Route>
             
             <Route path={AppUrl.Transaction} element={<TracingSearch />} />
+            <Route path={AppUrl.SearchBlockDetail} element={<SearchBlock/>} />
             <Route path={AppUrl.ReactAmin} element={<ReactPage />} />
 
 

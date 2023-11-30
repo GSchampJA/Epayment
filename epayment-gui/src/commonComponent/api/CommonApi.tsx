@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios"
 import { API_URL } from "../../App"
 import { ApiPath } from "../objectType/APIpath"
+import { Block } from "../objectType/BlockchainType"
 
 
 export interface stopMiningRequestBody {
@@ -23,4 +24,14 @@ export const sendApi_stopMining = (): Promise<AxiosResponse<stopMiningResponse>>
     const path = API_URL + ApiPath.StopMining
     console.log("sendApi_stopMining: ", path)
     return axios.get(path)
+} 
+
+export const sendApi_searchBlock = (blockIndex: number): Promise<AxiosResponse<Block>>  => {
+    const path = API_URL + ApiPath.searchBlock
+    console.log("sendApi_stopMining: ", path)
+    return axios.get(path, {
+        params: {
+          blockIndex: blockIndex,
+        },
+    });
 } 

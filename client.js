@@ -4,13 +4,17 @@ block=require('./block'),
 blockchain=require('./blockchain')
 network=require('./network');
 const wallet = require('./wallet');
-require('dotenv').config()
-const mongoose = require('mongoose');
 const { p2pNetwork } = require('./network');
 const { post } = require('superagent');
 const moment=require('moment');
 const { Worker} = require("worker_threads");
 const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config()
+const {storeWalletPrivateKey} = require('./DB/storeWalletPrivateKey')
+const {storeBlockToDB} = require('./DB/storeBlockToDB')
+
+const { verify } = require('crypto');
 
 app=express()
 function getMiningAddress(){
@@ -49,12 +53,55 @@ app.get("/", function (req, res) {
     
 });
 
-app.get("/getBlockBlockchain/:blockIndex",(req, res)=>{
-    // open db
-    // get blockchain based on id
-    // return block info
-})
+app.get("/searchBlock", function (req, res) {
 
+    const searchIndex = Number(req.query.blockIndex)
+    const lengthOfChain = blockchainObj.blockchain.length
+
+    console.log('search index: ', searchIndex)
+
+    console.log('chainLen:', lengthOfChain)
+
+    if ((searchIndex+1) > lengthOfChain || searchIndex < 2) {
+        // out of index
+        return res.json({})
+    } else {
+        return res.json(blockchainObj.blockchain[searchIndex-1])
+    }
+});
+app.get("/wholeBlockchain", function (req, res) {
+    // redis
+});
+
+app.post("/testStoreChainToDB",function (req, res) {
+    try{
+        // console.log(blockchainObj.blockchain[0]);
+        for (let i = 0; i < blockchainObj.blockchain.length; i++){
+            storeBlockToDB(blockchainObj.getLatestBlock());
+        }
+        console.log(blockchainObj.blockchain)
+        res.status(201)
+    } catch (err){
+        res.status(500).json({ message: err.message })
+    }
+});
+
+
+app.get("/getBlockBlockchain/:id", function (req, res) {
+    mongoose.connect(process.env.DATABASE_URL)
+    const db = mongoose.connection
+
+    db.on('error',(error)=> console.error(error))
+    db.once('open',()=>console.log('Connect to database'))
+
+    try{
+        const testing = db.collection('blockchain').find({_id: req.params.id})
+        console.log(testing);
+        res.status(200)
+    } catch (err){
+        res.status(500).json({ message: err.message })
+    }
+});
 
 //get request from req of address,amount and fee
 app.post('/createTx',function(req,res){
@@ -71,6 +118,7 @@ app.post('/verifyTx',function(req,res){
     if(blockchainObj.isTxExist(newTx)==false && blockchainObj.isTransactionValid(newTx)){
         networkObj.boardcast('/verifyTx','post',{"tx":newTx},'tx')
         blockchainObj.txPool.add(newTx)
+        res.send("accepted")
     }
 })
 
@@ -81,8 +129,12 @@ app.post('/wallet/Create',function(req,res){
 
     var publicKeyHash,privateKey
     [publicKeyHash,privateKey]= wallet.createNewAddress()
-
-    return res.json({ publicKeyHash, privateKey });
+    try {
+        storeWalletPrivateKey(privateKey);
+        return res.json({ publicKeyHash, privateKey });
+    }catch {
+        return res.status(500)
+    }
 })
 
 // create address - input:  privateKey
@@ -108,16 +160,19 @@ app.post('/wallet/valid_existing',function(req,res){
 
     
 })
-
+var worker
 
 app.get("/stopMining",(req,res)=>{
-    debugger
     const isMining = (blockchain.BlockChain.stopMining===true) ? true : false
     if(blockchain.BlockChain.stopMining==true){
         blockchain.BlockChain.stopMining=false
         networkObj.miningRequest()
     }else{
         blockchain.BlockChain.stopMining=true
+        if(worker){
+            console.log(worker)
+            worker.terminate();
+        }
     }
 
     console.log('stopMining:', blockchain.BlockChain.stopMining)
@@ -127,6 +182,7 @@ app.get("/stopMining",(req,res)=>{
     //stop mining proccess, true => stop mining ,false => mine
 })  
 
+
 app.post("/verifyBlock",(req,res)=>{
     var block=req.body.block
     if (blockchainObj.isBlockValid(block) &&!blockchainObj.isBlockExist(block)){
@@ -135,10 +191,17 @@ app.post("/verifyBlock",(req,res)=>{
         blockchain.BlockChain.length++
         for(tx of block.txns){
             blockchainObj.txPool.removeElement(tx)
+            blockchainObj.utxoPool.add(tx)
         }
-        // if(blockchain.BlockChain.stopMining==false){
-        //     networkObj.miningRequest()
-        // }
+        if(blockchain.BlockChain.stopMining==false){
+
+            if(worker){
+                console.log(worker)
+                worker.terminate();
+            }
+            networkObj.miningRequest()
+        }
+        // console.log("verified")
     }
     console.log(blockchainObj.blockchain)
 
@@ -177,7 +240,7 @@ app.get("/mining",async (req,res)=>{
     var coinbaseTx=blockchainObj.createCoinbaseTx(txns,'1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
     var newBlock=new block.Block(blockchain.BlockChain.length+1,newBlockHeader,[coinbaseTx,...txns])
     
-    const worker = new Worker("./mining.js", {
+    worker = new Worker("./mining.js", {
         workerData: { block: newBlock , length:blockchain.BlockChain.length, stopFlag:blockchain.BlockChain.stopMining},
     });
     worker.on("message", (data) => {
@@ -185,11 +248,12 @@ app.get("/mining",async (req,res)=>{
             if(txns.length!=0){
                 for(tx of txns){
                     blockchainObj.txPool.removeElement(tx)
+                    blockchainObj.utxoPool.add(tx)
                 }
             }
             blockchain.BlockChain.length++
-            // console.log(data)
-            // console.log(blockchain.BlockChain.length)
+            console.log(data)
+            console.log(blockchain.BlockChain.length)
             blockchainObj.blockchain.push(data)
             console.log("mined by c29")
             networkObj.boardcast("/verifyBlock","post",{"block":data},"block")
@@ -199,6 +263,7 @@ app.get("/mining",async (req,res)=>{
             //save this mined block to database
             //networkObj.miningRequest(getMiningAddress())
             networkObj.miningRequest()
+            storeBlockToDB(data)
         }else{
             console.log("Block Mined by others")
         }
@@ -215,9 +280,9 @@ app.get("/wallet/unspentTx", function (req, res) {
     //provide wallet information
     var map=new Map()
     map=blockchainObj.scanUnspentTx(wallet.wallet.walletAddress)
-    console.log(wallet.wallet.walletAddress)
-    console.log(blockchainObj.blockchain[2].txns)
-    console.log(map)
+    // console.log(wallet.wallet.walletAddress)
+    // console.log(blockchainObj.blockchain[2].txns)
+    // console.log(map)
     const jsonMap = JSON.parse(JSON.stringify(Object.fromEntries(map)));
     res.json(jsonMap)
 });

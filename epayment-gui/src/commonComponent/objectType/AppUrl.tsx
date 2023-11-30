@@ -4,6 +4,9 @@ export enum AppUrl {
     Home = '/',
     Transaction = '/trace',
     ReactAmin = '/reactPage',
+    SearchBlockDetail = '/searchBlockDetail',
+
+
     MyUTXOs = '/utxos',
     Login = '/login',
     RegisterAC = '/register',

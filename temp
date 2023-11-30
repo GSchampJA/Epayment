@@ -31,16 +31,21 @@ app.use(express.json())
 // app.use(express.json())
 //Sync with netwrok every time booted with network class
 
-app.get("/getBlockBlockchain", function (req, res) {
-    try {
-        const findBlockchain = Blockchain.find();
-        const findWallet = Wallet.find();
-    } catch (err) {
+app.get("/getBlockBlockchain/:id", function (req, res) {
+
+    mongoose.connect(process.env.DATABASE_URL)
+    const db = mongoose.connection
+
+    db.on('error',(error)=> console.error(error))
+    db.once('open',()=>console.log('Connect to database'))
+
+    try{
+        const testing = db.collection('blockchain').find({id: req.params.id})
+        console.log(testing);
+        res.status(201).json(newBlockchain)
+    } catch (err){
         res.status(500).json({ message: err.message })
     }
-    //1. Transaction
-    //2. Address
-    //3. Block's info
     
 });
 
@@ -62,23 +67,18 @@ app.get("/getBlockBlockchain", function (req, res) {
 
 // }
 
-app.post('/createBlockchain',function(req,res){
+app.post('/createNewBlockchain',function(req,res){
 
     mongoose.connect(process.env.DATABASE_URL)
     const db = mongoose.connection
 
-    //server can accept json
-
     db.on('error',(error)=> console.error(error))
     db.once('open',()=>console.log('Connect to database'))
-    // console.log(wallet.walletAddress)
-    // var blockchain=require('./blockchain')
-    // obj=new blockchain.BlockChain();
-    var coinBaseTx=blockchainObj.createCoinbaseTx([],'1qwFqhokiTASXVSTqQyNAuit6qfbMpx');
+    // var coinBaseTx=blockchainObj.createCoinbaseTx([],'1qwFqhokiTASXVSTqQyNAuit6qfbMpx');
     //  console.log(coinBaseTx)
 
-    // console.log(blockchainObj)
-    console.log(blockchainObj.blockchain[0].txns)
+    console.log(blockchainObj)
+    // console.log(blockchainObj.blockchain[0])
     // console.log(JSON.stringify(obj.blockchain[0].Block))
     
     const NewBlockchain = require('./model/blockchainSchema');
@@ -106,9 +106,16 @@ app.post('/createBlockchain',function(req,res){
     } catch {
         res.status(400)
     }
-
-    //
 })
+
+app.post('createWallet'),function(req,res){
+    // open mongoDB
+    mongoose.connect(process.env.DATABASE_URL)
+    const db = mongoose.connection
+
+    db.on('error',(error)=> console.error(error))
+    db.once('open',()=>console.log('Connect to database'))
+}
 
 //get request from req of address,amount and fee
 app.post('/createTx',function(req,res){
