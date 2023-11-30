@@ -136,10 +136,11 @@ app.post("/verifyBlock",(req,res)=>{
         for(tx of block.txns){
             blockchainObj.txPool.removeElement(tx)
         }
-        if(blockchain.BlockChain.stopMining==false){
-            networkObj.miningRequest()
-        }
+        // if(blockchain.BlockChain.stopMining==false){
+        //     networkObj.miningRequest()
+        // }
     }
+    console.log(blockchainObj.blockchain)
 
 })
 
@@ -148,7 +149,7 @@ app.get("/mining",async (req,res)=>{
     var txns=blockchainObj.txPool.toArray()
     }else var txns=[]
     var newBlockHeader=new block.BlockHeader(blockchainObj.getLatestBlock().currentBlockHash,moment().unix().toString())
-    newBlockHeader.difficulty=5
+    newBlockHeader.difficulty=6
     var coinbaseTx=blockchainObj.createCoinbaseTx(txns,'1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
     var newBlock=new block.Block(blockchain.BlockChain.length+1,newBlockHeader,[coinbaseTx,...txns])
     
@@ -163,9 +164,10 @@ app.get("/mining",async (req,res)=>{
                 }
             }
             blockchain.BlockChain.length++
-            console.log(data)
-            console.log(blockchain.BlockChain.length)
+            // console.log(data)
+            // console.log(blockchain.BlockChain.length)
             blockchainObj.blockchain.push(data)
+            console.log("mined by c29")
             networkObj.boardcast("/verifyBlock","post",{"block":data},"block")
             //database save data 
 
