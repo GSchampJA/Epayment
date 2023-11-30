@@ -9,7 +9,7 @@ const {LinkedList}=require('./utility/linkList')
 
 const coinbaseReward=0.00001
 class BlockChain{
-    static stopMining=false
+    static stopMining=true
     static length=1
     constructor(){
         this.txPool=new LinkedList()

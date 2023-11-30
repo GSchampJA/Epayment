@@ -25,7 +25,7 @@ function getMiningAddress(){
 app.use(cors());
 const blockchainObj=new blockchain.BlockChain()
 //give an array of addresses
-const networkObj=new p2pNetwork(["158.132.9.30:8333","158.132.9.28:8333"])
+const networkObj=new p2pNetwork(["158.132.9.30:8333"])
 // connection to the database
 // need to download mongodb into local storage
 // paste the local mongodb link to .env file to connect do the connection of mongodb
@@ -136,7 +136,9 @@ app.post("/verifyBlock",(req,res)=>{
         for(tx of block.txns){
             blockchainObj.txPool.removeElement(tx)
         }
-        networkObj.miningRequest()
+        if(blockchain.BlockChain.stopMining==false){
+            networkObj.miningRequest()
+        }
     }
 
 })
