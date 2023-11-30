@@ -9,8 +9,14 @@ export interface stopMiningRequestBody {
 
 
 
-export const sendApi_stopMining = (body: stopMiningRequestBody) => {
+// export const sendApi_stopMining = (body: stopMiningRequestBody) => {
+//     const path = API_URL + ApiPath.StopMining
+//     console.log("sendApi_stopMining: ", path)
+//     return axios.post(path, body)
+// } 
+
+export const sendApi_stopMining = () => {
     const path = API_URL + ApiPath.StopMining
     console.log("sendApi_stopMining: ", path)
-    return axios.post(path, body)
+    return axios.get(path)
 } 

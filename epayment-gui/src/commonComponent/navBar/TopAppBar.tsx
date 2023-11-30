@@ -60,16 +60,17 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
   }
 
   const triggerMine = () => {
-    if (isStopMining) {
+    // sendApi_stopMining({isMining: !isStopMining}).catch((er) => {
+    //   console.log(er); 
+    //   toast.error(`Server error 500: ${er}`)
+    // })
+    sendApi_stopMining()
+    // .catch((er) => {
+    //   console.log(er); 
+    //   toast.error(`Server error 500: ${er}`)
+    // })
 
-      
-      sendApi_stopMining({isMining: !isStopMining}).catch((er) => {
-        console.log(er); 
-        toast.error(`Server error 500: ${er}`)
-      })
-
-      setIsStopMining(!isStopMining)
-    }
+    setIsStopMining(!isStopMining)
   }
 
   return (
@@ -99,7 +100,7 @@ export const TopAppBar = (props: {open: boolean, toggleDrawer: () => any}) => {
 
         <IconButton color="inherit" onClick={triggerMine}>
           <Button style={{backgroundColor: "cornflowerblue"}} variant='contained'>
-            {isStopMining ? "Stopped Mining" : "Mining"}
+            {isStopMining ? "Stopped Mining" : "Mining..."}
           </Button>
         </IconButton>
         
