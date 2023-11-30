@@ -83,6 +83,7 @@ app.post('/createTx',function(req,res){
 
 app.post('/verifyTx',function(req,res){
     var newTx= req.body.tx
+    debugger
     if(newTx.txin[0]=='coinbase'){
         res.send("rejected")
     }

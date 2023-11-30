@@ -103,7 +103,7 @@ class wallet {
 
         try{
         var privateKey=Buffer.from(this.walletAddress.get(lockScript)[0],'hex')
-        var publicKey=this.walletAddress.get(lockScript)[1]
+        var publicKey=this.walletAddress.get(lockScript)[0]
         const sign= createSign('SHA256')
         sign.update(Buffer.from(txid,'hex'))
         sign.end();

@@ -190,7 +190,7 @@ class BlockChain{
             if(!(this.isTxNotSpent(tx.txin[i].utxo)) || !(this.searchTxInBlock(tx.txin[i].utxo)) ||!(this.isTxHashValid(tx))){
                 return false
             }
-            if(publicKeyHashfunc(Buffer.from(tx.txid))==publicKeyHash){
+            if(publicKeyHashfunc(Buffer.from(publicKey).subarray(-64,-32))==publicKeyHash){
                 const verify=createVerify('SHA256')
                 verify.update(Buffer.from(publicKeyHash))
                 verify.end()

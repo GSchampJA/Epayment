@@ -19,7 +19,7 @@ class LinkedList {
             return false
         }
         while (curr) {
-            if(current.element.txid==element.txid){
+            if(curr.element.txid==element.txid){
                 return true
             }
             curr = curr.next;
