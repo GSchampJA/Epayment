@@ -52,7 +52,7 @@ app.get("/", function (req, res) {
 
 app.get("/searchBlock", function (req, res) {
 
-    const searchIndex = req.query.blockIndex
+    const searchIndex = Number(req.query.blockIndex)
     const lengthOfChain = blockchainObj.blockchain.length
 
     console.log('search index: ', searchIndex)

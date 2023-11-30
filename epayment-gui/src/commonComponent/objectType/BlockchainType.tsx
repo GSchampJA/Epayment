@@ -8,8 +8,24 @@ export interface Block {
       difficulty: number;
       nonce: number;
     };
-    txns: [];
+    txns: txns[];
     currentBlockHash: string;
+}
+
+export interface txns {
+    toAddress: string;
+    amount: number;
+    txinCount: number;
+    txin: string[];
+    txoutputCount: number;
+    txout: {
+      toAddress: string;
+      amount: number;
+      lockScript: string;
+    }[];
+    fee: number;
+    timestamp: string;
+    txid: string;
 }
   
 

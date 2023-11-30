@@ -156,6 +156,11 @@
   background-color: #e5e6ec !important;
 }
 
+.table-hearder-tag {
+  background-color: rgb(228 224 224);
+  border-radius: 2rem;
+}
+
 /* .horizontal-scrol{
   overflowX: "auto"
 } */
