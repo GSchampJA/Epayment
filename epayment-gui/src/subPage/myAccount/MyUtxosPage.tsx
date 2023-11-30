@@ -37,15 +37,7 @@ const  MyUtxosPage = () => {
         uTxOsList: [],
     });
 
-    useEffect(() => {
-        // setTimeout(() => {
-        //     var sumAmount;
-        //     if (state.uTxOsList) {
-        //         sumAmount = state.uTxOsList.reduce((sum, utxo) => sum + utxo.amount, 0);
-        //     }
-        //   setState({ ...state, pageMode: pageMode.DEFAULT, totalAmount: sumAmount??undefined });
-        // }, 3000);
-
+    const fetchRecords = () => {
         sendApi_checkWalletUTx().then(res => {
             console.log('receive wallet/unspentTx response:')
             // console.log(res)
@@ -60,6 +52,16 @@ const  MyUtxosPage = () => {
                 totalAmount: sumAmount
             })
         })
+    }
+
+
+    useEffect(() => {
+        fetchRecords();
+        const intervalId = setInterval(fetchRecords, 5000); // Fetch data every 5 seconds
+
+        return () => {
+            clearInterval(intervalId); // Clean up the interval on component unmount
+        };
     }, []);
 
 
@@ -151,6 +153,15 @@ const  MyUtxosPage = () => {
 }
 
 export default  MyUtxosPage
+
+
+        // setTimeout(() => {
+        //     var sumAmount;
+        //     if (state.uTxOsList) {
+        //         sumAmount = state.uTxOsList.reduce((sum, utxo) => sum + utxo.amount, 0);
+        //     }
+        //   setState({ ...state, pageMode: pageMode.DEFAULT, totalAmount: sumAmount??undefined });
+        // }, 3000);
 
 {/* <TableCell align="right">vout</TableCell>
 <TableCell align="right">address</TableCell>

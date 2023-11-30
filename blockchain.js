@@ -11,7 +11,6 @@ const coinbaseReward=0.00001
 class BlockChain{
     static stopMining=false
     static length=1
-
     constructor(){
         this.txPool=new LinkedList()
         this.blockchain=[this.#getGenesisBlock()]
@@ -62,7 +61,7 @@ class BlockChain{
     // }
     //parameter is a block class object
     isBlockValid(block){
-        var hash=doubleHashLoop(block.BlockHeader)
+        var hash=doubleHashLoop(block.blockHeader)
         if(hash==block.currentBlockHash && block.blockHeader.previousBlockHeader==this.getLatestBlock.currentBlockHash){
             var totalTxFee=0
             for(e of block.txns){
@@ -74,6 +73,10 @@ class BlockChain{
 
         }
         return false
+    }
+
+    isTxExist(tx){
+        this.txPool.find(tx)
     }
 
     isChainValid() {
@@ -91,6 +94,15 @@ class BlockChain{
         }
 
         return true;
+    }
+
+    isBlockExist(block){
+        for(var block of this.blockchain){
+            if(block.currentBlockHash==block.currentBlockHash){
+                return true
+            }
+        }
+        return(false)
     }
 
     scanUnspentTx(addresses){

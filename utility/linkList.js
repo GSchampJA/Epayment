@@ -13,6 +13,20 @@ class LinkedList {
         this.size = 0;
     }
 
+    find(element){
+        var curr = this.head;
+        if(this.size==0){
+            return false
+        }
+        while (curr) {
+            if(current.element.txid==element.txid){
+                return true
+            }
+            curr = curr.next;
+        }
+        return false
+    }
+
     add(element)
         {
         // creates a new node

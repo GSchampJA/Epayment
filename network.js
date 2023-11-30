@@ -15,12 +15,10 @@ class p2pNetwork{
         }
     }
     //action = path; method = post...; data = transaction/block; contenttype = html/json/etc. 
-    boardcast(action,method,requestIP,data=null,contentType=null){
+    boardcast(action,method,data=null,contentType=null){
         let requestPromise=[]
         this.connectedPeers.forEach(element => {
-            if(element!=requestIP){
-                requestPromise.push(this.#message(element+action,method,data,contentType))
-            }
+            requestPromise.push(this.#message(element+action,method,data,contentType))
         });
         Promise.all(requestPromise).then(result=>{
             console.log(result)
