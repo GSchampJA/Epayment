@@ -12,31 +12,31 @@ const transactionSchema = new Schema(User, {
     },
     fullNodeList:{
         // full blockchain
-        blockIndex: Number,
+        blockIndex: {type: 'string'},
         blockHeader:{
-            version: Number ,
-            previousBlockHeader: String  ,
-            merkleRoot: String,
-            timeStamp: Number ,
-            difficulty: Number,
-            nonce:  Number
+            version:  {type: 'string'} ,
+            previousBlockHeader:  {type: 'set'}  ,
+            merkleRoot:  {type: 'set'},
+            timeStamp:  {type: 'string'} ,
+            difficulty:  {type: 'string'},
+            nonce:   {type: 'string'}
         },
-        txns: Array,
-        currentBlockHash: String
+        txns:  {type: 'list'},
+        currentBlockHash:  {type: 'string'}
     },
     neighborList:{
         // the forking blockchain
-        blockIndex: Number,
+        blockIndex:  {type: 'string'},
         blockHeader:{
-            version: Number ,
-            previousBlockHeader: String  ,
-            merkleRoot: String,
-            timeStamp: Number ,
-            difficulty: Number,
-            nonce:  Number
+            version:  {type: 'string'} ,
+            previousBlockHeader: {type: 'set'}  ,
+            merkleRoot: {type: 'set'},
+            timeStamp:  {type: 'string'} ,
+            difficulty:  {type: 'string'},
+            nonce:  {type: 'string'}
         },
-        txns: Array,
-        currentBlockHash: String
+        txns: {type: 'list'},
+        currentBlockHash: {type: 'string'}
     }
 })
 
