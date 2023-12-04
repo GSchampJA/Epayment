@@ -1,15 +1,12 @@
 // the transcation pool will be stored memory
 // will be using redis database schema
 import {Schema, Entity} from 'redis-om';
+const blockchain = require('../blockchain');
 
-class User extends Entity{
+class blockchainMem extends Entity{}
 
-}
-
-const transactionSchema = new Schema(User, {
-    chainHeight:{
-        type: Int16Array,
-    },
+const transactionSchema = new Schema(blockchainMem, {
+    chainHeight:{type: 'string'},
     fullNodeList:{
         // full blockchain
         blockIndex: {type: 'string'},
@@ -40,4 +37,17 @@ const transactionSchema = new Schema(User, {
     }
 })
 
-module.exports={transactionSchema}
+export async function create(blockchain){
+    const repo = client.fetchRepository(transactionSchem);
+    const blockchainMem = repo.createEntity(blockchain);
+
+    await repo.save(blockchainMem)
+    return blockchainMem.toJSON();
+}
+
+export async function getMem(blockIndex){
+    const repo = client.fetchRepository(transactionSchem);
+    const blockchainMem = await repo.fetch(blockIndex);
+
+    return blockchainMem.toJSON();
+}

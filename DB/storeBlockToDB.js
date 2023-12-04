@@ -6,8 +6,6 @@ const storeBlockToDB = (blockObj) => {
 
     db.on('error',(error)=> console.error(error))
     db.once('open',()=>console.log('Connect to database'))
-    let temp = 
-    // var coinBaseTx=blockchainObj.createCoinbaseTx([],'1qwFqhokiTASXVSTqQyNAuit6qfbMpx');
     console.log(blockObj)
     
     const NewBlock = require('../model/blockSchema');
@@ -18,13 +16,7 @@ const storeBlockToDB = (blockObj) => {
         currentBlockHash: blockObj.currentBlockHash
     })
 
-    // console.log("The new blockchain: \n" + newBlockchain)
-
-    // store the blockchain into db
-    // res.send(JSON.stringify(createNewBlockchain));
-
     db.collection('block').insertOne(newBlock)
-
 
 }
 
