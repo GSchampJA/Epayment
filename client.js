@@ -237,7 +237,7 @@ app.get("/mining",async (req,res)=>{
         }
     }
 
-    var coinbaseTx=blockchainObj.createCoinbaseTx(txns,'1qwFqhokiTASXVSTqQyNAuit6qfbMpx')
+    var coinbaseTx=blockchainObj.createCoinbaseTx(txns,getMiningAddress())
     var newBlock=new block.Block(blockchain.BlockChain.length+1,newBlockHeader,[coinbaseTx,...txns])
     
     worker = new Worker("./mining.js", {
